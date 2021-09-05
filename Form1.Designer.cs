@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -35,6 +36,7 @@
             this.btn_stop = new System.Windows.Forms.Button();
             this.btn_launch = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.timerRefresh = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -43,7 +45,7 @@
             this.label1.Font = new System.Drawing.Font("微软雅黑", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label1.Location = new System.Drawing.Point(21, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(216, 25);
+            this.label1.Size = new System.Drawing.Size(323, 38);
             this.label1.TabIndex = 0;
             this.label1.Text = "TBM Service Launcher";
             // 
@@ -53,7 +55,7 @@
             this.label4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label4.Location = new System.Drawing.Point(23, 63);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(80, 17);
+            this.label4.Size = new System.Drawing.Size(120, 25);
             this.label4.TabIndex = 3;
             this.label4.Text = "服务运行状态";
             // 
@@ -94,10 +96,15 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // timerRefresh
+            // 
+            this.timerRefresh.Interval = 1000;
+            this.timerRefresh.Tick += new System.EventHandler(this.timerRefresh_Tick);
+            // 
             // Form1
             // 
             this.AcceptButton = this.btn_launch;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(490, 441);
@@ -129,6 +136,7 @@
         private System.Windows.Forms.Button btn_stop;
         private System.Windows.Forms.Button btn_launch;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Timer timerRefresh;
     }
 }
 
