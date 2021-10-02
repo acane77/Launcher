@@ -70,7 +70,7 @@ namespace tbm_launcher
                 Hide();
                 button2_Click(null, null);
             }
-            buttonConfig.Show(); // todo remove it
+            //buttonConfig.Show(); // todo remove it
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -114,6 +114,7 @@ namespace tbm_launcher
         {
             var form = new FormConfigure();
             form.IniConfigureList = LI;
+            form.SystemTitle = Text;
             form.ShowDialog();
         }
     }

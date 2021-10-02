@@ -64,6 +64,8 @@ namespace tbm_launcher
         public List<LaunchInfo> IniConfigureList = null;
         List<SettingItemConfig> settingItemConfigs = new List<SettingItemConfig>();
 
+        public string SystemTitle = "";
+
         void InitializeConfigItem()
         {
             settingItemConfigs.Clear();
@@ -133,7 +135,7 @@ namespace tbm_launcher
             SettingItemConfig settingItem = settingItemConfigs[index];
             Label labelConfigName = new Label();
             labelConfigName.Text = settingItem.FriendlyConfigName;
-            labelConfigName.Location = new Point(baseTitleLeft, baseHeight);
+            labelConfigName.Location = new Point(baseTitleLeft, baseHeight + 3);
             labelConfigName.Size = new Size(baseValueLeft - baseTitleLeft, 22);
             panel_config.Controls.Add(labelConfigName);
 
@@ -232,7 +234,7 @@ namespace tbm_launcher
         {
             InitializeConfigItem();
             RenderConfigItemList();
-            
+            textBox1.Text = SystemTitle;
         }
 
         private void listConfig_SelectedIndexChanged(object sender, EventArgs e)
@@ -257,7 +259,8 @@ namespace tbm_launcher
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string str = "";
+            string str = "[SYSTEM]" + CRLF;
+            str += "title=" + textBox1.Text + CRLF + CRLF;
             foreach (object o in listConfig.Items)
             {
                 LaunchInfoPlain p = o as LaunchInfoPlain;

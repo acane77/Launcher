@@ -37,12 +37,14 @@ namespace tbm_launcher
             this.button3 = new System.Windows.Forms.Button();
             this.panel_config = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 7);
+            this.label1.Location = new System.Drawing.Point(12, 49);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(64, 24);
@@ -53,7 +55,7 @@ namespace tbm_launcher
             // 
             this.listConfig.FormattingEnabled = true;
             this.listConfig.ItemHeight = 24;
-            this.listConfig.Location = new System.Drawing.Point(16, 34);
+            this.listConfig.Location = new System.Drawing.Point(16, 76);
             this.listConfig.Name = "listConfig";
             this.listConfig.Size = new System.Drawing.Size(245, 196);
             this.listConfig.TabIndex = 1;
@@ -61,7 +63,7 @@ namespace tbm_launcher
             // 
             // btn_launch
             // 
-            this.btn_launch.Location = new System.Drawing.Point(630, 285);
+            this.btn_launch.Location = new System.Drawing.Point(630, 327);
             this.btn_launch.Name = "btn_launch";
             this.btn_launch.Size = new System.Drawing.Size(144, 31);
             this.btn_launch.TabIndex = 2;
@@ -71,7 +73,7 @@ namespace tbm_launcher
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(480, 285);
+            this.button1.Location = new System.Drawing.Point(480, 327);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(144, 31);
             this.button1.TabIndex = 3;
@@ -81,7 +83,7 @@ namespace tbm_launcher
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(16, 239);
+            this.button2.Location = new System.Drawing.Point(16, 281);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(95, 31);
             this.button2.TabIndex = 4;
@@ -91,7 +93,7 @@ namespace tbm_launcher
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(117, 239);
+            this.button3.Location = new System.Drawing.Point(117, 281);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(95, 31);
             this.button3.TabIndex = 5;
@@ -101,7 +103,7 @@ namespace tbm_launcher
             // 
             // panel_config
             // 
-            this.panel_config.Location = new System.Drawing.Point(269, 34);
+            this.panel_config.Location = new System.Drawing.Point(269, 76);
             this.panel_config.Name = "panel_config";
             this.panel_config.Size = new System.Drawing.Size(505, 236);
             this.panel_config.TabIndex = 6;
@@ -109,18 +111,37 @@ namespace tbm_launcher
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(276, 7);
+            this.label2.Location = new System.Drawing.Point(276, 49);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(46, 24);
             this.label2.TabIndex = 7;
             this.label2.Text = "配置";
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(68, 10);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(451, 31);
+            this.textBox1.TabIndex = 8;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(13, 13);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(46, 24);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "标题";
+            // 
             // FormConfigure
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(786, 324);
+            this.ClientSize = new System.Drawing.Size(786, 368);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.panel_config);
             this.Controls.Add(this.button3);
@@ -153,5 +174,7 @@ namespace tbm_launcher
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Panel panel_config;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label3;
     }
 }
