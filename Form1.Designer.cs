@@ -37,6 +37,7 @@
             this.btn_launch = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.timerRefresh = new System.Windows.Forms.Timer(this.components);
+            this.buttonConfig = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -61,9 +62,10 @@
             // 
             // panel1
             // 
+            this.panel1.AutoScroll = true;
             this.panel1.Location = new System.Drawing.Point(26, 96);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(439, 276);
+            this.panel1.Size = new System.Drawing.Size(461, 276);
             this.panel1.TabIndex = 4;
             // 
             // btn_stop
@@ -101,6 +103,17 @@
             this.timerRefresh.Interval = 1000;
             this.timerRefresh.Tick += new System.EventHandler(this.timerRefresh_Tick);
             // 
+            // buttonConfig
+            // 
+            this.buttonConfig.Location = new System.Drawing.Point(344, 12);
+            this.buttonConfig.Name = "buttonConfig";
+            this.buttonConfig.Size = new System.Drawing.Size(134, 31);
+            this.buttonConfig.TabIndex = 8;
+            this.buttonConfig.Text = "编辑配置...";
+            this.buttonConfig.UseVisualStyleBackColor = true;
+            this.buttonConfig.Visible = false;
+            this.buttonConfig.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.btn_launch;
@@ -108,6 +121,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(490, 441);
+            this.Controls.Add(this.buttonConfig);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btn_launch);
             this.Controls.Add(this.btn_stop);
@@ -115,6 +129,7 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.MaximizeBox = false;
@@ -137,6 +152,7 @@
         private System.Windows.Forms.Button btn_launch;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Timer timerRefresh;
+        private System.Windows.Forms.Button buttonConfig;
     }
 }
 

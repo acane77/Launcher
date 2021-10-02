@@ -12,7 +12,22 @@ using System.Windows.Forms;
 
 namespace tbm_launcher
 {
-    class LaunchInfo
+    public class LaunchInfoPlain
+    {
+        public bool depend_resolvable;
+        public string Name;
+        public string Command;
+        public int PortNumber;
+        public string RequirementCommand;
+        public string StatusCheckMethod;
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+    }
+    public class LaunchInfo
     {
         private Label _obj_status;
         private Label _obj_name;
@@ -29,6 +44,11 @@ namespace tbm_launcher
         private int status;
         private string requirement_test;
         private string status_check_method;
+
+        public string Command { get { return command; } }
+        public int PortNumber { get { return port; } }
+        public string RequirementCommand { get { return requirement_test; } }
+        public string StatusCheckMethod { get { return status_check_method; } }
 
         bool manual_terminate = false;
 
@@ -116,6 +136,17 @@ namespace tbm_launcher
             RetriveRunningInformation();
         }
 
+        public LaunchInfoPlain GetLauncherInfoPlain()
+        {
+            return new LaunchInfoPlain {
+                Name = name,
+                PortNumber = PortNumber,
+                Command = Command,
+                RequirementCommand = RequirementCommand,
+                StatusCheckMethod = StatusCheckMethod
+            };
+        }
+
         bool getProcessRunningStatus()
         {
             string program_name = command.Split(" ".ToCharArray())[0].Split("\\/".ToCharArray()).Last().Trim();
@@ -187,16 +218,23 @@ namespace tbm_launcher
             get { return status; }
             set
             {
-                status = value;
-                if (status == 0) { _obj_status.Text = "获取运行信息..."; _lnk_launch.Show(); _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = false; _lnk_launch.Text = "启动"; }
-                else if (status == 1) { _obj_status.Text = "正在运行"; _obj_status.ForeColor = Color.Green; _lnk_launch.Enabled = true; _lnk_launch.Text = "停止"; }
-                else if (status == 2) { _obj_status.Text = "已停止"; _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = true; _lnk_launch.Text = "启动"; _lnk_inst_req.Hide(); }
-                else if (status == 3) { _obj_status.Text = "缺少依赖"; _obj_status.ForeColor = Color.Red; _lnk_launch.Hide(); _lnk_inst_req.Show(); }
-                else if (status == 4) { _obj_status.Text = "正在处理"; _obj_status.ForeColor = Color.Black; _lnk_inst_req.Hide(); _lnk_launch.Enabled = false; }
-                else if (status == 6) { _obj_status.Text = "运行失败"; _lnk_launch.Text = "启动"; _obj_status.ForeColor = Color.Red; }
-                else if (status == 7) { _obj_status.Text = "配置文件错误"; _obj_status.ForeColor = Color.Red; _lnk_launch.Hide(); _lnk_inst_req.Show(); }
-                if (status == 1) { _port.ForeColor = Color.Blue; _port.Cursor = Cursors.Hand; _port.Font = new Font(_parent_control.Font, FontStyle.Underline); }
-                else { _port.ForeColor = Color.Black; _port.Cursor = Cursors.Default; _port.Font = _parent_control.Font; }
+                try
+                {
+                    status = value;
+                    if (status == 0) { _obj_status.Text = "获取运行信息..."; _lnk_launch.Show(); _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = false; _lnk_launch.Text = "启动"; }
+                    else if (status == 1) { _obj_status.Text = "正在运行"; _obj_status.ForeColor = Color.Green; _lnk_launch.Enabled = true; _lnk_launch.Text = "停止"; }
+                    else if (status == 2) { _obj_status.Text = "已停止"; _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = true; _lnk_launch.Text = "启动"; _lnk_inst_req.Hide(); }
+                    else if (status == 3) { _obj_status.Text = "缺少依赖"; _obj_status.ForeColor = Color.Red; _lnk_launch.Hide(); _lnk_inst_req.Show(); }
+                    else if (status == 4) { _obj_status.Text = "正在处理"; _obj_status.ForeColor = Color.Black; _lnk_inst_req.Hide(); _lnk_launch.Enabled = false; }
+                    else if (status == 6) { _obj_status.Text = "运行失败"; _lnk_launch.Text = "启动"; _obj_status.ForeColor = Color.Red; }
+                    else if (status == 7) { _obj_status.Text = "配置文件错误"; _obj_status.ForeColor = Color.Red; _lnk_launch.Hide(); _lnk_inst_req.Show(); }
+                    if (status == 1) { _port.ForeColor = Color.Blue; _port.Cursor = Cursors.Hand; _port.Font = new Font(_parent_control.Font, FontStyle.Underline); }
+                    else { _port.ForeColor = Color.Black; _port.Cursor = Cursors.Default; _port.Font = _parent_control.Font; }
+                }
+                catch (Exception ee)
+                {
+                    
+                }
             }
         }
 

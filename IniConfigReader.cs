@@ -95,7 +95,7 @@ namespace tbm_launcher
                         is_system_config = true;
                     }
                     else is_system_config = false;
-                    name = "";
+                    name = line.Replace("[", "").Replace("]", "");
                     command = "";
                     port = 0;
                     req_check_cmd = "";
@@ -121,7 +121,7 @@ namespace tbm_launcher
                     }
                     continue;
                 }
-                if (on_error) continue;
+                // if (on_error) continue;
                 string[] parts = line.Split("=".ToCharArray());
                 if (parts.Length < 2)
                 {

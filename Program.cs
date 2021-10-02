@@ -12,8 +12,12 @@ namespace tbm_launcher
         /// 应用程序的主入口点。
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            foreach (string arg in args) {
+                if (arg == "-c" || arg == "--config")
+                    ProgramGlobalConfig.StartWithConfigureFlag = true;
+            }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

@@ -26,7 +26,7 @@ namespace tbm_launcher
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            const string CONFIG_FILENAME = "launcher_config.ini";
+            const string CONFIG_FILENAME = ProgramGlobalConfig.CONFIG_FILENAME;
             bool has_error = false;
             string err_msg = "配置文件存在以下错误：";
             if (!File.Exists(CONFIG_FILENAME))
@@ -64,6 +64,13 @@ namespace tbm_launcher
             //LI.Add(new LaunchInfo("旧数据提供", "tbm.exe -p {port} -D new.db --disable-collector", 7707, 0, "tbm.exe -v", 2, panel1));
             //LI.Add(new LaunchInfo("旧数据的可视化", "http-server  ./webclient/ -p {port} -P http://localhost:7707", 8081, 0, "http-server -v", 3, panel1));
             
+            if (ProgramGlobalConfig.StartWithConfigureFlag)
+            {
+                //buttonConfig.Show();
+                Hide();
+                button2_Click(null, null);
+            }
+            buttonConfig.Show(); // todo remove it
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -101,6 +108,13 @@ namespace tbm_launcher
         {
             foreach (LaunchInfo l in LI)
                 l.RetriveRunningInformation(true);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var form = new FormConfigure();
+            form.IniConfigureList = LI;
+            form.ShowDialog();
         }
     }
 }
