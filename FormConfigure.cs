@@ -19,154 +19,36 @@ namespace tbm_launcher
             InitializeComponent();
         }
 
-        class SettingItemConfig<ValueType>
-        {
-            public class ListItem
-            {
-                public string Name;
-                public string Value;
-            }
-
-            public class ValidateResult {
-                public int Code;
-                public string Message;
-
-                public ValidateResult(int Code, string Message)
-                {
-                    this.Code = Code;
-                    this.Message = Message;
-                }
-
-                public static readonly ValidateResult VALIDATE_PASSED = new ValidateResult(0, "Success");
-                public static readonly ValidateResult VALIDATE_FAILED= new ValidateResult(1, "Failed");
-            }
-            
-
-            public delegate ValidateResult Validator<T>(T value);
-            public delegate string GetValueT(ValueType valueObj);
-            public delegate void SetValueT(ValueType valueObj, string value);
-            public delegate string ValueFillHandlerT(string configName, ValueType valueType);
-            public Validator<string> ValidateInputHandler = null;
-            public GetValueT GetValueHandler = null;
-            public SetValueT SetValueHandler = null;
-            public static ValueFillHandlerT ValueFillHandler = null;
-
-            public const int CONFIG_TYPE_LIST = 1;
-            public const int CONFIG_TYPE_STRING = 2;
-            public const int CONFIG_TYPE_FILE = 3;
-            public const int CONFIG_TYPE_INT = 4;
-            public const int CONFIG_TYPE_DECIMAL = 5;
-            public string ConfigName;
-            public string FriendlyConfigName;
-            public int ConfigType;
-            public List<ListItem> ListItems;
-
-            private void RenderControl(int index, string value, ValueType info, Panel container)
-            {
-                int baseHeight = index * 30 + 15;
-                int baseTitleLeft = 20;
-                int baseValueLeft = 120;
-                SettingItemConfig<ValueType> settingItem = this;
-                Label labelConfigName = new Label();
-                labelConfigName.Text = settingItem.FriendlyConfigName;
-                labelConfigName.Location = new Point(baseTitleLeft, baseHeight + 3);
-                labelConfigName.Size = new Size(baseValueLeft - baseTitleLeft, 22);
-                container.Controls.Add(labelConfigName);
-
-                Control valueControl = null;
-                if (settingItem.ConfigType == CONFIG_TYPE_STRING
-                    || settingItem.ConfigType == CONFIG_TYPE_FILE
-                    || settingItem.ConfigType == CONFIG_TYPE_INT
-                    || settingItem.ConfigType == CONFIG_TYPE_DECIMAL)
-                {
-                    if (settingItem.ListItems != null)
-                    {
-                        ComboBox comboBox = new ComboBox();
-                        foreach (ListItem item in settingItem.ListItems)
-                            comboBox.Items.Add(item.Name ?? item.Value);
-                        valueControl = comboBox;
-                    }
-                    else
-                    {
-                        TextBox valueCtrl = new TextBox();
-                        valueControl = valueCtrl;
-                    }
-                    valueControl.TextChanged += (object s_, EventArgs e_) => {
-                        settingItem.SetValueHandler(info, (s_ as Control).Text);
-                    };
-                    valueControl.Text = value;
-                }
-                else if (settingItem.ConfigType == CONFIG_TYPE_LIST)
-                {
-                    ComboBox dropDownList = new ComboBox();
-                    valueControl = dropDownList;
-                    dropDownList.DropDownStyle = ComboBoxStyle.DropDownList;
-                    if (settingItem.ListItems != null)
-                    {
-                        int selectedIndex = 0; // 默认检查端口占用，所以选0
-                        int _currentIndex = 0;
-                        foreach (ListItem item in settingItem.ListItems)
-                        {
-                            dropDownList.Items.Add(item.Name ?? item.Value);
-                            dropDownList.SelectedIndexChanged += (object sender_, EventArgs e_) => {
-                                settingItem.SetValueHandler(info, settingItem.ListItems[(sender_ as ComboBox).SelectedIndex].Value);
-                            };
-                            if (item.Value == value)
-                                selectedIndex = _currentIndex;
-                            _currentIndex++;
-                        }
-                        dropDownList.Tag = settingItem.ListItems;
-                        if (selectedIndex >= 0)
-                            dropDownList.SelectedIndex = selectedIndex;
-                    }
-                }
-                valueControl.Location = new Point(baseValueLeft, baseHeight);
-                valueControl.Size = new Size(container.Width - baseValueLeft - 10, 22);
-                container.Controls.Add(valueControl);
-            }
-
-            public static void RenderControlGroup(List<SettingItemConfig<ValueType>> items, ValueType info, Panel container)
-            {
-                container.Controls.Clear();
-                for (int i = 0; i < items.Count; i++)
-                {
-                    string value = ValueFillHandler?.Invoke(items[i].ConfigName, info) ?? "";
-                    items[i].RenderControl(i, value, info, container);
-                }
-            }
-        }
-
         public List<LaunchInfo> IniConfigureList = null;
-        List<SettingItemConfig<LaunchInfoPlain>> settingItemConfigs = new List<SettingItemConfig<LaunchInfoPlain>>();
-
+        List<MetaInformation<LaunchInfoPlain>> settingItemConfigs = new List<MetaInformation<LaunchInfoPlain>>();
         public string SystemTitle = "";
 
         void InitializeConfigItem()
         {
             settingItemConfigs.Clear();
-            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
             {
                 ConfigName = "name",
                 FriendlyConfigName = "服务名称",
-                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_STRING,
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_STRING,
                 GetValueHandler = (LaunchInfoPlain p) => { return p.Name; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.Name = val; }
             });;
 
-            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
             {
                 ConfigName = "command",
                 FriendlyConfigName = "命令",
-                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_STRING,
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_STRING,
                 GetValueHandler = (LaunchInfoPlain p) => { return p.Command; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.Command = val; }
             });
 
-            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
             {
                 ConfigName = "port",
                 FriendlyConfigName = "端口",
-                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_INT,
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_INT,
                 GetValueHandler = (LaunchInfoPlain p) => { return p.PortNumber.ToString(); },
                 SetValueHandler = (LaunchInfoPlain p, string val) => {
                     try { p.PortNumber = Int32.Parse(val); }
@@ -174,34 +56,34 @@ namespace tbm_launcher
                 }
             });
 
-            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
             {
                 ConfigName = "requirement_command",
                 FriendlyConfigName = "依赖检查命令",
-                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_STRING,
-                ListItems = new List<SettingItemConfig<LaunchInfoPlain>.ListItem>
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_STRING,
+                ListItems = new List<MetaInformation<LaunchInfoPlain>.ListItem>
                 {
-                    new SettingItemConfig<LaunchInfoPlain>.ListItem{ Name = "CHECK_EXISTANCE", Value = "CHECK_EXISTANCE" },
+                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "CHECK_EXISTANCE", Value = "CHECK_EXISTANCE" },
                 },
                 GetValueHandler = (LaunchInfoPlain p) => { return p.RequirementCommand; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.RequirementCommand = val; }
             });
 
-            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
             {
                 ConfigName = "status_check_method",
                 FriendlyConfigName = "运行状态检查",
-                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_LIST,
-                ListItems = new List<SettingItemConfig<LaunchInfoPlain>.ListItem>
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_LIST,
+                ListItems = new List<MetaInformation<LaunchInfoPlain>.ListItem>
                 {
-                    new SettingItemConfig<LaunchInfoPlain>.ListItem{ Name = "检查端口占用", Value = StatusCheckMethod.CHECK_PORT_USAGE },
-                    new SettingItemConfig<LaunchInfoPlain>.ListItem{ Name = "检查进程是否存在", Value = StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE },
+                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "检查端口占用", Value = StatusCheckMethod.CHECK_PORT_USAGE },
+                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "检查进程是否存在", Value = StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE },
                 },
                 GetValueHandler = (LaunchInfoPlain p) => { return p.StatusCheckMethod; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.StatusCheckMethod = val; }
             });
 
-            SettingItemConfig<LaunchInfoPlain>.ValueFillHandler = FillValueOfValuedSettingItem;
+            MetaInformation<LaunchInfoPlain>.ValueFillHandler = FillValueOfValuedSettingItem;
         }
 
         string FillValueOfValuedSettingItem(string nameInConfig, LaunchInfoPlain info)
@@ -221,7 +103,19 @@ namespace tbm_launcher
             }
             return "<Error Value>";
         }
-        
+
+        string GenerateIniString()
+        {
+            string str = "[SYSTEM]" + CRLF;
+            str += "title=" + textBox1.Text + CRLF + CRLF;
+            foreach (object o in listConfig.Items)
+            {
+                LaunchInfoPlain p = o as LaunchInfoPlain;
+                str += MetaInformation<LaunchInfoPlain>.GenerateIniString(settingItemConfigs, p);
+            }
+            return str;
+        }
+
         void RenderConfigItemList()
         {
             listConfig.Items.Clear();
@@ -248,7 +142,7 @@ namespace tbm_launcher
                 return;
             }
             LastSelectedConfigItem = listConfig.SelectedIndex;
-            SettingItemConfig<LaunchInfoPlain>.RenderControlGroup(settingItemConfigs, 
+            MetaInformation<LaunchInfoPlain>.RenderControlGroup(settingItemConfigs, 
                 listConfig.SelectedItem as LaunchInfoPlain, panel_config);
         }
 
@@ -264,14 +158,7 @@ namespace tbm_launcher
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string str = "[SYSTEM]" + CRLF;
-            str += "title=" + textBox1.Text + CRLF + CRLF;
-            foreach (object o in listConfig.Items)
-            {
-                LaunchInfoPlain p = o as LaunchInfoPlain;
-                str += GenerateIniString(p);
-            }
-            //MessageBox.Show(str);
+            string str = GenerateIniString();
             File.WriteAllText(ProgramGlobalConfig.CONFIG_FILENAME, str);
             Close();
         }
@@ -295,15 +182,6 @@ namespace tbm_launcher
 
         const string CRLF = "\r\n";
 
-        string GenerateIniString(LaunchInfoPlain p)
-        {
-            string str = "[custom_program]\r\n";
-            foreach (SettingItemConfig<LaunchInfoPlain> conf in settingItemConfigs) {
-                str += conf.ConfigName + "=" + conf.GetValueHandler(p).Replace("\r","").Replace("\n","") + "\r\n";
-            }
-            return str + CRLF;
-        }
-
         int LastSelectedConfigItem = -1;
 
         private void button3_Click(object sender, EventArgs e)
@@ -315,6 +193,10 @@ namespace tbm_launcher
             listConfig.SelectedIndex = Math.Min(sel, listConfig.Items.Count - 1);
         }
 
-        
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string str = GenerateIniString();
+            MessageBox.Show(str);
+        }
     }
 }

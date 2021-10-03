@@ -63,7 +63,7 @@ namespace tbm_launcher
             {
                 button2_Click(null, null);
             }
-            buttonConfig.Show(); // todo remove it
+            //buttonConfig.Show(); // todo remove it
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
