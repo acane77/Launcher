@@ -105,13 +105,15 @@
             // 
             // buttonConfig
             // 
-            this.buttonConfig.Location = new System.Drawing.Point(344, 12);
+            this.buttonConfig.FlatAppearance.BorderSize = 0;
+            this.buttonConfig.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+            this.buttonConfig.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonConfig.Image = global::tbm_launcher.Properties.Resources.Settings_16x;
+            this.buttonConfig.Location = new System.Drawing.Point(457, 3);
             this.buttonConfig.Name = "buttonConfig";
-            this.buttonConfig.Size = new System.Drawing.Size(134, 31);
+            this.buttonConfig.Size = new System.Drawing.Size(30, 31);
             this.buttonConfig.TabIndex = 8;
-            this.buttonConfig.Text = "编辑配置...";
             this.buttonConfig.UseVisualStyleBackColor = true;
-            this.buttonConfig.Visible = false;
             this.buttonConfig.Click += new System.EventHandler(this.button2_Click);
             // 
             // Form1
