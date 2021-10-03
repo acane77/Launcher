@@ -61,6 +61,7 @@ namespace tbm_launcher
  
             if (ProgramGlobalConfig.StartWithConfigureFlag)
             {
+                
                 button2_Click(null, null);
             }
             //buttonConfig.Show(); // todo remove it
@@ -109,7 +110,8 @@ namespace tbm_launcher
             form.IniConfigureList = LI;
             form.SystemTitle = Text;
             Hide();
-            form.Show();
+            form.ShowDialog();
+            
         }
     }
 }
