@@ -100,7 +100,7 @@
             // 
             // timerRefresh
             // 
-            this.timerRefresh.Interval = 1000;
+            this.timerRefresh.Interval = 10000;
             this.timerRefresh.Tick += new System.EventHandler(this.timerRefresh_Tick);
             // 
             // buttonConfig

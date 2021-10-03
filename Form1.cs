@@ -58,19 +58,12 @@ namespace tbm_launcher
                 MessageBox.Show("加载配置文件失败:" + ee.Message);
             }
             Control.CheckForIllegalCrossThreadCalls = false;
-
-            //LI.Add(new LaunchInfo("数据采集和实时数据提供", "tbm.exe -p {port} -D tbm.db", 7706, 0, "tbm.exe -v", 0, panel1));
-            //LI.Add(new LaunchInfo("实时采集数据可视化", "http-server.cmd ./webclient/ -p {port} -P http://localhost:7706", 8080, 0, "http-server.cmd -v", 1, panel1));
-            //LI.Add(new LaunchInfo("旧数据提供", "tbm.exe -p {port} -D new.db --disable-collector", 7707, 0, "tbm.exe -v", 2, panel1));
-            //LI.Add(new LaunchInfo("旧数据的可视化", "http-server  ./webclient/ -p {port} -P http://localhost:7707", 8081, 0, "http-server -v", 3, panel1));
-            
+ 
             if (ProgramGlobalConfig.StartWithConfigureFlag)
             {
-                //buttonConfig.Show();
-                Hide();
                 button2_Click(null, null);
             }
-            //buttonConfig.Show(); // todo remove it
+            buttonConfig.Show(); // todo remove it
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -115,7 +108,8 @@ namespace tbm_launcher
             var form = new FormConfigure();
             form.IniConfigureList = LI;
             form.SystemTitle = Text;
-            form.ShowDialog();
+            Hide();
+            form.Show();
         }
     }
 }

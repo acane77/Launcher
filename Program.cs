@@ -14,12 +14,24 @@ namespace tbm_launcher
         [STAThread]
         static void Main(string[] args)
         {
-            foreach (string arg in args) {
-                if (arg == "-c" || arg == "--config")
-                    ProgramGlobalConfig.StartWithConfigureFlag = true;
-            }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            foreach (string arg in args)
+            {
+                if (arg == "-c" || arg == "--config")
+                    ProgramGlobalConfig.StartWithConfigureFlag = true;
+                else if (arg == "-h")
+                {
+                    MessageBox.Show(
+                        "Usage: tbm_launcher [-c]\r\n" +
+                        "\r\n" +
+                        "Options:\r\n" +
+                        "  -c, --config     Open configure window\r\n" +
+                        "  -h               Print this help message" +
+                        "");
+                    return;
+                }
+            }
             Application.Run(new Form1());
         }
     }

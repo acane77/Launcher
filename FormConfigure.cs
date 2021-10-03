@@ -19,7 +19,7 @@ namespace tbm_launcher
             InitializeComponent();
         }
 
-        class BaseSettingItemConfig<ValueType>
+        class SettingItemConfig<ValueType>
         {
             public class ListItem
             {
@@ -30,23 +30,26 @@ namespace tbm_launcher
             public class ValidateResult {
                 public int Code;
                 public string Message;
-                private int v1;
-                private string v2;
 
-                public ValidateResult(int v1, string v2)
+                public ValidateResult(int Code, string Message)
                 {
-                    this.v1 = v1;
-                    this.v2 = v2;
+                    this.Code = Code;
+                    this.Message = Message;
                 }
-            }
-            public readonly ValidateResult VALIDATER_PASSED = new ValidateResult(0, "Success");
 
-            public delegate bool Validator<T>(T value);
+                public static readonly ValidateResult VALIDATE_PASSED = new ValidateResult(0, "Success");
+                public static readonly ValidateResult VALIDATE_FAILED= new ValidateResult(1, "Failed");
+            }
+            
+
+            public delegate ValidateResult Validator<T>(T value);
             public delegate string GetValueT(ValueType valueObj);
             public delegate void SetValueT(ValueType valueObj, string value);
+            public delegate string ValueFillHandlerT(string configName, ValueType valueType);
             public Validator<string> ValidateInputHandler = null;
             public GetValueT GetValueHandler = null;
             public SetValueT SetValueHandler = null;
+            public static ValueFillHandlerT ValueFillHandler = null;
 
             public const int CONFIG_TYPE_LIST = 1;
             public const int CONFIG_TYPE_STRING = 2;
@@ -57,41 +60,113 @@ namespace tbm_launcher
             public string FriendlyConfigName;
             public int ConfigType;
             public List<ListItem> ListItems;
+
+            private void RenderControl(int index, string value, ValueType info, Panel container)
+            {
+                int baseHeight = index * 30 + 15;
+                int baseTitleLeft = 20;
+                int baseValueLeft = 120;
+                SettingItemConfig<ValueType> settingItem = this;
+                Label labelConfigName = new Label();
+                labelConfigName.Text = settingItem.FriendlyConfigName;
+                labelConfigName.Location = new Point(baseTitleLeft, baseHeight + 3);
+                labelConfigName.Size = new Size(baseValueLeft - baseTitleLeft, 22);
+                container.Controls.Add(labelConfigName);
+
+                Control valueControl = null;
+                if (settingItem.ConfigType == CONFIG_TYPE_STRING
+                    || settingItem.ConfigType == CONFIG_TYPE_FILE
+                    || settingItem.ConfigType == CONFIG_TYPE_INT
+                    || settingItem.ConfigType == CONFIG_TYPE_DECIMAL)
+                {
+                    if (settingItem.ListItems != null)
+                    {
+                        ComboBox comboBox = new ComboBox();
+                        foreach (ListItem item in settingItem.ListItems)
+                            comboBox.Items.Add(item.Name ?? item.Value);
+                        valueControl = comboBox;
+                    }
+                    else
+                    {
+                        TextBox valueCtrl = new TextBox();
+                        valueControl = valueCtrl;
+                    }
+                    valueControl.TextChanged += (object s_, EventArgs e_) => {
+                        settingItem.SetValueHandler(info, (s_ as Control).Text);
+                    };
+                    valueControl.Text = value;
+                }
+                else if (settingItem.ConfigType == CONFIG_TYPE_LIST)
+                {
+                    ComboBox dropDownList = new ComboBox();
+                    valueControl = dropDownList;
+                    dropDownList.DropDownStyle = ComboBoxStyle.DropDownList;
+                    if (settingItem.ListItems != null)
+                    {
+                        int selectedIndex = 0; // 默认检查端口占用，所以选0
+                        int _currentIndex = 0;
+                        foreach (ListItem item in settingItem.ListItems)
+                        {
+                            dropDownList.Items.Add(item.Name ?? item.Value);
+                            dropDownList.SelectedIndexChanged += (object sender_, EventArgs e_) => {
+                                settingItem.SetValueHandler(info, settingItem.ListItems[(sender_ as ComboBox).SelectedIndex].Value);
+                            };
+                            if (item.Value == value)
+                                selectedIndex = _currentIndex;
+                            _currentIndex++;
+                        }
+                        dropDownList.Tag = settingItem.ListItems;
+                        if (selectedIndex >= 0)
+                            dropDownList.SelectedIndex = selectedIndex;
+                    }
+                }
+                valueControl.Location = new Point(baseValueLeft, baseHeight);
+                valueControl.Size = new Size(container.Width - baseValueLeft - 10, 22);
+                container.Controls.Add(valueControl);
+            }
+
+            public static void RenderControlGroup(List<SettingItemConfig<ValueType>> items, ValueType info, Panel container)
+            {
+                container.Controls.Clear();
+                for (int i = 0; i < items.Count; i++)
+                {
+                    string value = ValueFillHandler?.Invoke(items[i].ConfigName, info) ?? "";
+                    items[i].RenderControl(i, value, info, container);
+                }
+            }
         }
 
-        class SettingItemConfig : BaseSettingItemConfig<LaunchInfoPlain> { }
-
         public List<LaunchInfo> IniConfigureList = null;
-        List<SettingItemConfig> settingItemConfigs = new List<SettingItemConfig>();
+        List<SettingItemConfig<LaunchInfoPlain>> settingItemConfigs = new List<SettingItemConfig<LaunchInfoPlain>>();
 
         public string SystemTitle = "";
 
         void InitializeConfigItem()
         {
             settingItemConfigs.Clear();
-            settingItemConfigs.Add(new SettingItemConfig
+            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
             {
                 ConfigName = "name",
                 FriendlyConfigName = "服务名称",
-                ConfigType = SettingItemConfig.CONFIG_TYPE_STRING,
+                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_STRING,
                 GetValueHandler = (LaunchInfoPlain p) => { return p.Name; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.Name = val; }
             });;
 
-            settingItemConfigs.Add(new SettingItemConfig
+            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
             {
                 ConfigName = "command",
                 FriendlyConfigName = "命令",
-                ConfigType = SettingItemConfig.CONFIG_TYPE_STRING,
+                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_STRING,
                 GetValueHandler = (LaunchInfoPlain p) => { return p.Command; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.Command = val; }
             });
 
-            settingItemConfigs.Add(new SettingItemConfig
+            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
             {
                 ConfigName = "port",
                 FriendlyConfigName = "端口",
-                ConfigType = SettingItemConfig.CONFIG_TYPE_INT,
+                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_INT,
                 GetValueHandler = (LaunchInfoPlain p) => { return p.PortNumber.ToString(); },
                 SetValueHandler = (LaunchInfoPlain p, string val) => {
                     try { p.PortNumber = Int32.Parse(val); }
@@ -99,96 +174,34 @@ namespace tbm_launcher
                 }
             });
 
-            settingItemConfigs.Add(new SettingItemConfig
+            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
             {
                 ConfigName = "requirement_command",
                 FriendlyConfigName = "依赖检查命令",
-                ConfigType = SettingItemConfig.CONFIG_TYPE_STRING,
-                ListItems = new List<SettingItemConfig.ListItem>
+                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_STRING,
+                ListItems = new List<SettingItemConfig<LaunchInfoPlain>.ListItem>
                 {
-                    new SettingItemConfig.ListItem{ Name = "CHECK_EXISTANCE", Value = "CHECK_EXISTANCE" },
+                    new SettingItemConfig<LaunchInfoPlain>.ListItem{ Name = "CHECK_EXISTANCE", Value = "CHECK_EXISTANCE" },
                 },
                 GetValueHandler = (LaunchInfoPlain p) => { return p.RequirementCommand; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.RequirementCommand = val; }
             });
 
-            settingItemConfigs.Add(new SettingItemConfig
+            settingItemConfigs.Add(new SettingItemConfig<LaunchInfoPlain>
             {
                 ConfigName = "status_check_method",
                 FriendlyConfigName = "运行状态检查",
-                ConfigType = SettingItemConfig.CONFIG_TYPE_LIST,
-                ListItems = new List<SettingItemConfig.ListItem>
+                ConfigType = SettingItemConfig<LaunchInfoPlain>.CONFIG_TYPE_LIST,
+                ListItems = new List<SettingItemConfig<LaunchInfoPlain>.ListItem>
                 {
-                    new SettingItemConfig.ListItem{ Name = "检查端口占用", Value = StatusCheckMethod.CHECK_PORT_USAGE },
-                    new SettingItemConfig.ListItem{ Name = "检查进程是否存在", Value = StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE },
+                    new SettingItemConfig<LaunchInfoPlain>.ListItem{ Name = "检查端口占用", Value = StatusCheckMethod.CHECK_PORT_USAGE },
+                    new SettingItemConfig<LaunchInfoPlain>.ListItem{ Name = "检查进程是否存在", Value = StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE },
                 },
                 GetValueHandler = (LaunchInfoPlain p) => { return p.StatusCheckMethod; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.StatusCheckMethod = val; }
             });
-        }
 
-        void RenderConfigInputItem(int index, string value, LaunchInfoPlain info) 
-        {
-            int baseHeight = index * 30 + 15;
-            int baseTitleLeft = 20;
-            int baseValueLeft = 120; 
-            SettingItemConfig settingItem = settingItemConfigs[index];
-            Label labelConfigName = new Label();
-            labelConfigName.Text = settingItem.FriendlyConfigName;
-            labelConfigName.Location = new Point(baseTitleLeft, baseHeight + 3);
-            labelConfigName.Size = new Size(baseValueLeft - baseTitleLeft, 22);
-            panel_config.Controls.Add(labelConfigName);
-
-            Control valueControl = null;
-            if (settingItem.ConfigType == SettingItemConfig.CONFIG_TYPE_STRING
-                || settingItem.ConfigType == SettingItemConfig.CONFIG_TYPE_FILE
-                || settingItem.ConfigType == SettingItemConfig.CONFIG_TYPE_INT
-                || settingItem.ConfigType == SettingItemConfig.CONFIG_TYPE_DECIMAL)
-            {
-                if (settingItem.ListItems != null)
-                {
-                    ComboBox comboBox = new ComboBox();
-                    foreach (SettingItemConfig.ListItem item in settingItem.ListItems)
-                        comboBox.Items.Add(item.Name ?? item.Value);
-                    valueControl = comboBox;
-                }
-                else
-                {
-                    TextBox valueCtrl = new TextBox();
-                    valueControl = valueCtrl;
-                }
-                valueControl.TextChanged += (object s_, EventArgs e_) => {
-                    settingItem.SetValueHandler(info, (s_ as Control).Text);
-                };
-                valueControl.Text = value;
-            }
-            else if (settingItem.ConfigType == SettingItemConfig.CONFIG_TYPE_LIST)
-            {
-                ComboBox dropDownList = new ComboBox();
-                valueControl = dropDownList;
-                dropDownList.DropDownStyle = ComboBoxStyle.DropDownList;
-                if (settingItem.ListItems != null)
-                {
-                    int selectedIndex = 0; // 默认检查端口占用，所以选0
-                    int _currentIndex = 0;
-                    foreach (SettingItemConfig.ListItem item in settingItem.ListItems)
-                    {
-                        dropDownList.Items.Add(item.Name ?? item.Value);
-                        dropDownList.SelectedIndexChanged += (object sender_, EventArgs e_) => {
-                            settingItem.SetValueHandler(info, settingItem.ListItems[(sender_ as ComboBox).SelectedIndex].Value);
-                        };
-                        if (item.Value == value)
-                            selectedIndex = _currentIndex;
-                        _currentIndex++;
-                    }
-                    dropDownList.Tag = settingItem.ListItems;
-                    if (selectedIndex >= 0)
-                        dropDownList.SelectedIndex = selectedIndex;
-                }
-            }
-            valueControl.Location = new Point(baseValueLeft, baseHeight);
-            valueControl.Size = new Size(panel_config.Width - baseValueLeft - 10, 22);
-            panel_config.Controls.Add(valueControl);
+            SettingItemConfig<LaunchInfoPlain>.ValueFillHandler = FillValueOfValuedSettingItem;
         }
 
         string FillValueOfValuedSettingItem(string nameInConfig, LaunchInfoPlain info)
@@ -208,17 +221,7 @@ namespace tbm_launcher
             }
             return "<Error Value>";
         }
-
-        void RenderConfigInputPanel(LaunchInfoPlain info)
-        {
-            panel_config.Controls.Clear();
-            for (int i = 0; i < settingItemConfigs.Count; i++)
-            {
-                string value = FillValueOfValuedSettingItem(settingItemConfigs[i].ConfigName, info);
-                RenderConfigInputItem(i, value, info);
-            }
-        }
-
+        
         void RenderConfigItemList()
         {
             listConfig.Items.Clear();
@@ -244,7 +247,9 @@ namespace tbm_launcher
                 panel_config.Controls.Clear();
                 return;
             }
-            RenderConfigInputPanel(listConfig.SelectedItem as LaunchInfoPlain);
+            LastSelectedConfigItem = listConfig.SelectedIndex;
+            SettingItemConfig<LaunchInfoPlain>.RenderControlGroup(settingItemConfigs, 
+                listConfig.SelectedItem as LaunchInfoPlain, panel_config);
         }
 
         private void FormConfigure_FormClosed(object sender, FormClosedEventArgs e)
@@ -272,7 +277,6 @@ namespace tbm_launcher
         }
 
         int new_config_count = 1;
-
         private void button2_Click(object sender, EventArgs e)
         {
             string newConfigName = "new_config_" + new_config_count;
@@ -294,11 +298,13 @@ namespace tbm_launcher
         string GenerateIniString(LaunchInfoPlain p)
         {
             string str = "[custom_program]\r\n";
-            foreach (SettingItemConfig conf in settingItemConfigs) {
+            foreach (SettingItemConfig<LaunchInfoPlain> conf in settingItemConfigs) {
                 str += conf.ConfigName + "=" + conf.GetValueHandler(p).Replace("\r","").Replace("\n","") + "\r\n";
             }
             return str + CRLF;
         }
+
+        int LastSelectedConfigItem = -1;
 
         private void button3_Click(object sender, EventArgs e)
         {
