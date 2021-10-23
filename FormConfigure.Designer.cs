@@ -47,26 +47,26 @@ namespace tbm_launcher
             this.label1.Location = new System.Drawing.Point(13, 40);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 17);
+            this.label1.Size = new System.Drawing.Size(64, 24);
             this.label1.TabIndex = 0;
             this.label1.Text = "配置项";
             // 
             // listConfig
             // 
             this.listConfig.FormattingEnabled = true;
-            this.listConfig.ItemHeight = 17;
+            this.listConfig.ItemHeight = 24;
             this.listConfig.Location = new System.Drawing.Point(16, 59);
             this.listConfig.Name = "listConfig";
-            this.listConfig.Size = new System.Drawing.Size(196, 242);
+            this.listConfig.Size = new System.Drawing.Size(196, 244);
             this.listConfig.TabIndex = 1;
             this.listConfig.SelectedIndexChanged += new System.EventHandler(this.listConfig_SelectedIndexChanged);
             // 
             // btn_launch
             // 
             this.btn_launch.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btn_launch.Location = new System.Drawing.Point(459, 325);
+            this.btn_launch.Location = new System.Drawing.Point(459, 330);
             this.btn_launch.Name = "btn_launch";
-            this.btn_launch.Size = new System.Drawing.Size(103, 31);
+            this.btn_launch.Size = new System.Drawing.Size(103, 28);
             this.btn_launch.TabIndex = 2;
             this.btn_launch.Text = "取消";
             this.btn_launch.UseVisualStyleBackColor = true;
@@ -75,9 +75,9 @@ namespace tbm_launcher
             // button1
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button1.Location = new System.Drawing.Point(350, 325);
+            this.button1.Location = new System.Drawing.Point(350, 330);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(103, 31);
+            this.button1.Size = new System.Drawing.Size(103, 28);
             this.button1.TabIndex = 3;
             this.button1.Text = "保存";
             this.button1.UseVisualStyleBackColor = true;
@@ -87,7 +87,7 @@ namespace tbm_launcher
             // 
             this.textBox1.Location = new System.Drawing.Point(68, 10);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(451, 23);
+            this.textBox1.Size = new System.Drawing.Size(451, 31);
             this.textBox1.TabIndex = 8;
             // 
             // label3
@@ -96,7 +96,7 @@ namespace tbm_launcher
             this.label3.Location = new System.Drawing.Point(13, 13);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(32, 17);
+            this.label3.Size = new System.Drawing.Size(46, 24);
             this.label3.TabIndex = 9;
             this.label3.Text = "标题";
             // 
@@ -152,7 +152,7 @@ namespace tbm_launcher
             // FormConfigure
             // 
             this.AcceptButton = this.button1;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(576, 368);

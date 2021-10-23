@@ -54,6 +54,7 @@ namespace tbm_launcher
             string command = "";
             int port = 0;
             string req_check_cmd = "";
+            bool run_background = true;
             string status_check_method = "CHECK_PORT_USAGE"; // CHECK_EXECUTABLE_EXISTANCE    CHECK_PORT_USAGE
             bool initialized = false;
 
@@ -66,7 +67,7 @@ namespace tbm_launcher
             {
                 if (is_system_config) return;
                 LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.CONFIG_ERROR, 
-                        req_check_cmd, count, status_check_method, Container);
+                        req_check_cmd, count, status_check_method, run_background, Container);
                 ParseError err = new ParseError(line_no, what);
                 onLoadConfigError?.Invoke(LI, err);
                 on_error = true;
@@ -83,7 +84,7 @@ namespace tbm_launcher
                         if (!on_error && !is_system_config)
                         {
                             LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.RETERVING_RUNNING_STATUS, 
-                                req_check_cmd, count, status_check_method, Container);
+                                req_check_cmd, count, status_check_method, run_background, Container);
                             OnReadConfigItem?.Invoke(LI);
                             count++;
                         }
@@ -156,16 +157,19 @@ namespace tbm_launcher
                                 ", 可选的值有：" + StatusCheckMethod.CHECK_PORT_USAGE + "和" + StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE);
                         status_check_method = value;
                         break;
+                    case "run_background":
+                        run_background = value == "1";
+                        break;
                     default:
                         EmitParseError("没有此配置项：" + settingName);
                         break;
                 }
             }
 
-            if (!on_error)
+            if (!on_error && !is_system_config)
             {
                 LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.RETERVING_RUNNING_STATUS,
-                    req_check_cmd, count, status_check_method, Container);
+                    req_check_cmd, count, status_check_method, run_background, Container);
                 OnReadConfigItem?.Invoke(LI);
             }
         }

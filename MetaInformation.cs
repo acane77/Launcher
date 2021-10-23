@@ -46,6 +46,7 @@ namespace tbm_launcher
         public const int CONFIG_TYPE_FILE = 3;
         public const int CONFIG_TYPE_INT = 4;
         public const int CONFIG_TYPE_DECIMAL = 5;
+        public const int CONFIG_TYPE_BOOL = 6;
         public string ConfigName;
         public string FriendlyConfigName;
         public int ConfigType;
@@ -57,6 +58,7 @@ namespace tbm_launcher
             int baseTitleLeft = 20;
             int baseValueLeft = 120;
             int baseValueRight = 20;
+            int baseValueHeightOffset = 0;
             MetaInformation<ValueType> settingItem = this;
             Label labelConfigName = new Label();
             labelConfigName.Text = settingItem.FriendlyConfigName;
@@ -73,6 +75,7 @@ namespace tbm_launcher
                 if (settingItem.ListItems != null)
                 {
                     ComboBox comboBox = new ComboBox();
+                    baseValueHeightOffset = -1;
                     foreach (ListItem item in settingItem.ListItems)
                         comboBox.Items.Add(item.Name ?? item.Value);
                     valueControl = comboBox;
@@ -111,8 +114,47 @@ namespace tbm_launcher
                         dropDownList.SelectedIndex = selectedIndex;
                 }
             }
-            valueControl.Location = new Point(baseValueLeft, baseHeight);
+            else if (settingItem.ConfigType == CONFIG_TYPE_BOOL)
+            {
+                CheckBox checkbox = new CheckBox();
+                valueControl = checkbox;
+                checkbox.Checked = value == "1";
+                checkbox.CheckedChanged += (object sender_, EventArgs e_) => {
+                    settingItem.SetValueHandler(info, (sender_ as CheckBox).Checked ? "1" : "0");
+                };
+            }
+            valueControl.Location = new Point(baseValueLeft, baseHeight + baseValueHeightOffset);
             valueControl.Size = new Size(container.Width - baseValueLeft - baseValueRight, 22);
+            Control additionalButton = null;
+            // add special buttons for certain ConfigTypes
+            if (settingItem.ConfigType == CONFIG_TYPE_FILE)
+            {
+                int additionalButtonWidth = 50;
+                int baseAdditionalButtonRight = baseValueRight;
+                
+                valueControl.Size = new Size(container.Width - baseValueLeft - baseValueRight - additionalButtonWidth, 22);
+                baseValueRight = container.Width - additionalButtonWidth;
+                Button button = new Button();
+                button.Text = "浏览...";
+                button.Location = new Point(container.Width - baseAdditionalButtonRight - 50, baseHeight - 3);
+                button.FlatStyle = FlatStyle.System;
+                button.Size = new Size(additionalButtonWidth, 28);
+                button.Click += (object _s, EventArgs _e) =>
+                {
+                    OpenFileDialog dialog = new OpenFileDialog();
+                    dialog.InitialDirectory = Application.StartupPath;
+                    dialog.CheckFileExists = true;
+                    var res = dialog.ShowDialog();
+                    if (res == DialogResult.OK)
+                    {
+                        valueControl.Text = dialog.FileName;
+                    }
+                };
+                additionalButton = button;
+            }
+            if (additionalButton != null) {
+                container.Controls.Add(additionalButton);
+            }
             container.Controls.Add(valueControl);
         }
 

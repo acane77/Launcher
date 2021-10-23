@@ -94,14 +94,17 @@ namespace tbm_launcher
 
         private void button1_Click(object sender, EventArgs e)
         {
-            foreach (LaunchInfo l in LI)
-                l.RetriveRunningInformation(true);
+            Thread th = new Thread(() =>
+            {
+                foreach (LaunchInfo l in LI)
+                    l.RetriveRunningInformation(true);
+            });
+            th.Start();
         }
 
         private void timerRefresh_Tick(object sender, EventArgs e)
         {
-            foreach (LaunchInfo l in LI)
-                l.RetriveRunningInformation(true);
+            button1_Click(sender, e);
         }
 
         private void button2_Click(object sender, EventArgs e)

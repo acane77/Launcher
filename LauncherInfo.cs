@@ -20,6 +20,7 @@ namespace tbm_launcher
         public int PortNumber;
         public string RequirementCommand;
         public string StatusCheckMethod;
+        public bool RunBackground;
 
         public override string ToString()
         {
@@ -42,6 +43,7 @@ namespace tbm_launcher
         private string command;
         private int port;
         private int status;
+        private bool run_background;
         private string requirement_test;
         private string status_check_method;
 
@@ -49,11 +51,12 @@ namespace tbm_launcher
         public int PortNumber { get { return port; } }
         public string RequirementCommand { get { return requirement_test; } }
         public string StatusCheckMethod { get { return status_check_method; } }
+        public bool RunBackground { get { return run_background; } }
 
         bool manual_terminate = false;
 
 
-        public LaunchInfo(string name, string command, int port, int status, string req, int index, string status_check_method, Panel container)
+        public LaunchInfo(string name, string command, int port, int status, string req, int index, string status_check_method, bool run_background, Panel container)
         {
             this.name = name;
             this.command = command;
@@ -61,6 +64,7 @@ namespace tbm_launcher
             this.status = status;
             this.requirement_test = req;
             this.status_check_method = status_check_method;
+            this.run_background = run_background;
             this._parent_control = container;
 
             const int height = 30;
@@ -143,7 +147,8 @@ namespace tbm_launcher
                 PortNumber = PortNumber,
                 Command = Command,
                 RequirementCommand = RequirementCommand,
-                StatusCheckMethod = StatusCheckMethod
+                StatusCheckMethod = StatusCheckMethod,
+                RunBackground = RunBackground
             };
         }
 
@@ -265,6 +270,7 @@ namespace tbm_launcher
             Status = RunningStatus.PROCESSING;
             Thread th2 = new Thread(() =>
             {
+                string identifier = "";
                 var p = new Process();
                 p.StartInfo.FileName = ("taskkill.exe");
                 p.StartInfo.CreateNoWindow = true;
@@ -274,12 +280,15 @@ namespace tbm_launcher
                     TcpHelperUtil tcpHelper = new TcpHelperUtil();
                     var details = tcpHelper.GetPortDetails(port);
                     if (details.Item1)
-                        p.StartInfo.Arguments = "/pid " + details.Item2.ProcessID + " /f"; 
+                        p.StartInfo.Arguments = "/pid " + details.Item2.ProcessID + " /f";
+                    identifier = details.Item2.ProcessID.ToString();
                 }
                 else if (status_check_method == IniConfigReader.StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE)
                 {
                     string program_name = command.Split(" ".ToCharArray())[0].Split("\\/".ToCharArray()).Last().Trim();
+                    if (!program_name.EndsWith(".exe")) program_name += ".exe";
                     p.StartInfo.Arguments = "/im " + program_name + " /f";
+                    identifier = program_name;
                 }
                 p.Start();
                 p.WaitForExit();
@@ -287,7 +296,7 @@ namespace tbm_launcher
                     Status = RunningStatus.STOPPED;
                 else
                 {
-                    MessageBox.Show(_parent_control.Parent, "在此之前该程序已经停止运行 (EXITCODE=" + p.ExitCode + ")");
+                    MessageBox.Show(_parent_control.Parent, "执行该操作的时候发生了错误。\r\n可能是因为\r\n   (1)该程序已经停止运行\r\n   (2)该程序的启动命令并不包含实际执行的应用的名称\r\n\r\nreturn code: " + p.ExitCode + "\r\nidentifier: " + identifier, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Status = RunningStatus.STOPPED;
                 }
             });
@@ -322,6 +331,10 @@ namespace tbm_launcher
             {
                 return File.Exists(command.Split(" ".ToCharArray())[0].Trim());
             }
+            if (requirement_test == "DO_NOT_CHECK") 
+            {
+                return true;    
+            }
             return launch_get_return_code(requirement_test) == 0;
         }
 
@@ -353,7 +366,8 @@ namespace tbm_launcher
                 p.StartInfo.FileName = executable;
                 p.StartInfo.Arguments = args;
                 p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                if (RunBackground)
+                    p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.Start();
                 Status = RunningStatus.RUNNING;
 

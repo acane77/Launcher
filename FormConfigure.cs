@@ -39,7 +39,7 @@ namespace tbm_launcher
             {
                 ConfigName = "command",
                 FriendlyConfigName = "命令",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_STRING,
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_FILE,
                 GetValueHandler = (LaunchInfoPlain p) => { return p.Command; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.Command = val; }
             });
@@ -60,10 +60,11 @@ namespace tbm_launcher
             {
                 ConfigName = "requirement_command",
                 FriendlyConfigName = "依赖检查命令",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_STRING,
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_FILE,
                 ListItems = new List<MetaInformation<LaunchInfoPlain>.ListItem>
                 {
                     new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "CHECK_EXISTANCE", Value = "CHECK_EXISTANCE" },
+                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "DO_NOT_CHECK", Value = "DO_NOT_CHECK" },
                 },
                 GetValueHandler = (LaunchInfoPlain p) => { return p.RequirementCommand; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.RequirementCommand = val; }
@@ -83,6 +84,15 @@ namespace tbm_launcher
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.StatusCheckMethod = val; }
             });
 
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            {
+                ConfigName = "run_background",
+                FriendlyConfigName = "在后台运行",
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_BOOL,
+                GetValueHandler = (LaunchInfoPlain p) => { return p.RunBackground ? "1" : "0"; },
+                SetValueHandler = (LaunchInfoPlain p, string val) => { p.RunBackground = val == "1"; }
+            });
+
             MetaInformation<LaunchInfoPlain>.ValueFillHandler = FillValueOfValuedSettingItem;
         }
 
@@ -100,6 +110,8 @@ namespace tbm_launcher
                     return info.RequirementCommand;
                 case "status_check_method":
                     return info.StatusCheckMethod;
+                case "run_background":
+                    return info.RunBackground ? "1" : "0";
             }
             return "<Error Value>";
         }
@@ -166,7 +178,7 @@ namespace tbm_launcher
         int new_config_count = 1;
         private void button2_Click(object sender, EventArgs e)
         {
-            string newConfigName = "new_config_" + new_config_count;
+            string newConfigName = "新建配置项 #" + new_config_count;
             new_config_count++;
             LaunchInfoPlain L = new LaunchInfoPlain
             {
