@@ -79,7 +79,10 @@ namespace tbm_launcher
             _obj_status.Text = "获取运行信息...";
             _obj_status.ForeColor = Color.Gray;
             _obj_status.Location = new Point(200, height * index);
-            container.Controls.Add(_obj_status);
+            if (status_check_method != IniConfigReader.StatusCheckMethod.NO_CHECK)
+            {
+                container.Controls.Add(_obj_status);
+            }
 
             _port = new Label();
             _port.Text = port.ToString();
@@ -164,6 +167,11 @@ namespace tbm_launcher
 
         public void RetriveRunningInformation(bool slient = false)
         {
+            if (StatusCheckMethod == IniConfigReader.StatusCheckMethod.NO_CHECK)
+            {
+                Status = RunningStatus.STOPPED;
+                return;
+            }
             if (!slient)  Status = RunningStatus.RETERVING_RUNNING_STATUS;
             Thread th = new Thread(() =>
             {
@@ -226,12 +234,12 @@ namespace tbm_launcher
                 try
                 {
                     status = value;
-                    if (status == 0) { _obj_status.Text = "获取运行信息..."; _lnk_launch.Show(); _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = false; _lnk_launch.Text = "启动"; }
+                    if (status == 0) { _obj_status.Text = "获取运行信息..."; _lnk_launch.Show(); _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = false; _lnk_launch.Text = "启动"; if (status_check_method == IniConfigReader.StatusCheckMethod.NO_CHECK) { _lnk_launch.Text = "打开"; }  }
                     else if (status == 1) { _obj_status.Text = "正在运行"; _obj_status.ForeColor = Color.Green; _lnk_launch.Enabled = true; _lnk_launch.Text = "停止"; }
-                    else if (status == 2) { _obj_status.Text = "已停止"; _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = true; _lnk_launch.Text = "启动"; _lnk_inst_req.Hide(); }
+                    else if (status == 2) { _obj_status.Text = "已停止"; _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = true; _lnk_launch.Text = "启动"; _lnk_inst_req.Hide(); if (status_check_method == IniConfigReader.StatusCheckMethod.NO_CHECK) { _lnk_launch.Text = "打开"; } }
                     else if (status == 3) { _obj_status.Text = "缺少依赖"; _obj_status.ForeColor = Color.Red; _lnk_launch.Hide(); _lnk_inst_req.Show(); }
                     else if (status == 4) { _obj_status.Text = "正在处理"; _obj_status.ForeColor = Color.Black; _lnk_inst_req.Hide(); _lnk_launch.Enabled = false; }
-                    else if (status == 6) { _obj_status.Text = "运行失败"; _lnk_launch.Text = "启动"; _obj_status.ForeColor = Color.Red; }
+                    else if (status == 6) { _obj_status.Text = "运行失败"; _lnk_launch.Text = "启动"; _obj_status.ForeColor = Color.Red; if (status_check_method == IniConfigReader.StatusCheckMethod.NO_CHECK) { _lnk_launch.Text = "打开"; } }
                     else if (status == 7) { _obj_status.Text = "配置文件错误"; _obj_status.ForeColor = Color.Red; _lnk_launch.Hide(); _lnk_inst_req.Show(); }
                     if (status == 1) { _port.ForeColor = Color.Blue; _port.Cursor = Cursors.Hand; _port.Font = new Font(_parent_control.Font, FontStyle.Underline); }
                     else { _port.ForeColor = Color.Black; _port.Cursor = Cursors.Default; _port.Font = _parent_control.Font; }
@@ -371,7 +379,8 @@ namespace tbm_launcher
                 p.Start();
                 Status = RunningStatus.RUNNING;
 
-                p.WaitForExit();
+                if (StatusCheckMethod != IniConfigReader.StatusCheckMethod.NO_CHECK)
+                    p.WaitForExit();
                 if (p.ExitCode == 0 || manual_terminate)
                 {
                     Status = RunningStatus.STOPPED;

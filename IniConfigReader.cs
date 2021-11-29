@@ -25,6 +25,7 @@ namespace tbm_launcher
         public class StatusCheckMethod {
             public static string CHECK_PORT_USAGE = "PORT_USAGE";
             public static string CHECK_EXECUTABLE_EXISTANCE = "EXECUTABLE_EXISTANCE";
+            public static string NO_CHECK = "NO_CHECK";
         }
 
         public IniConfigReader(string filename)
@@ -152,9 +153,9 @@ namespace tbm_launcher
                         req_check_cmd = value;
                         break;
                     case "status_check_method":
-                        if (value != StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE && value != StatusCheckMethod.CHECK_PORT_USAGE)
+                        if (value != StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE && value != StatusCheckMethod.CHECK_PORT_USAGE && value != StatusCheckMethod.NO_CHECK)
                             EmitParseError("配置项：错误的启动状态检查方式：" + value +
-                                ", 可选的值有：" + StatusCheckMethod.CHECK_PORT_USAGE + "和" + StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE);
+                                ", 可选的值有：" + StatusCheckMethod.CHECK_PORT_USAGE + "," + StatusCheckMethod.NO_CHECK + "和" + StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE);
                         status_check_method = value;
                         break;
                     case "run_background":

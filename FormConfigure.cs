@@ -63,8 +63,8 @@ namespace tbm_launcher
                 ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_FILE,
                 ListItems = new List<MetaInformation<LaunchInfoPlain>.ListItem>
                 {
-                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "CHECK_EXISTANCE", Value = "CHECK_EXISTANCE" },
-                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "DO_NOT_CHECK", Value = "DO_NOT_CHECK" },
+                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "检查文件是否存在", Value = "CHECK_EXISTANCE" },
+                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "不检查依赖", Value = "DO_NOT_CHECK" },
                 },
                 GetValueHandler = (LaunchInfoPlain p) => { return p.RequirementCommand; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.RequirementCommand = val; }
@@ -79,6 +79,7 @@ namespace tbm_launcher
                 {
                     new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "检查端口占用", Value = StatusCheckMethod.CHECK_PORT_USAGE },
                     new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "检查进程是否存在", Value = StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE },
+                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "不检查运行状态", Value = StatusCheckMethod.NO_CHECK }
                 },
                 GetValueHandler = (LaunchInfoPlain p) => { return p.StatusCheckMethod; },
                 SetValueHandler = (LaunchInfoPlain p, string val) => { p.StatusCheckMethod = val; }

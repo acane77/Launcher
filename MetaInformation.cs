@@ -79,6 +79,14 @@ namespace tbm_launcher
                     foreach (ListItem item in settingItem.ListItems)
                         comboBox.Items.Add(item.Name ?? item.Value);
                     valueControl = comboBox;
+                    comboBox.SelectedIndexChanged += (object s, EventArgs ev) => {
+                        ComboBox cb = s as ComboBox;
+                        int selected_index = cb.SelectedIndex;
+                        if (selected_index < 0)
+                            return;
+                        string text = settingItem.ListItems[selected_index].Value;
+                        cb.BeginInvoke(new Action(() => cb.Text = text));
+                    };
                 }
                 else
                 {
