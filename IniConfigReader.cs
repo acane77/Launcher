@@ -58,6 +58,8 @@ namespace tbm_launcher
             bool run_background = true;
             string status_check_method = "CHECK_PORT_USAGE"; // CHECK_EXECUTABLE_EXISTANCE    CHECK_PORT_USAGE
             bool initialized = false;
+            string exe_name = "";
+            string work_dir = "";
 
             int line_no = 0;
             int count = 0;
@@ -68,7 +70,7 @@ namespace tbm_launcher
             {
                 if (is_system_config) return;
                 LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.CONFIG_ERROR, 
-                        req_check_cmd, count, status_check_method, run_background, Container);
+                        req_check_cmd, count, status_check_method, run_background, work_dir, exe_name, Container);
                 ParseError err = new ParseError(line_no, what);
                 onLoadConfigError?.Invoke(LI, err);
                 on_error = true;
@@ -85,7 +87,7 @@ namespace tbm_launcher
                         if (!on_error && !is_system_config)
                         {
                             LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.RETERVING_RUNNING_STATUS, 
-                                req_check_cmd, count, status_check_method, run_background, Container);
+                                req_check_cmd, count, status_check_method, run_background, work_dir, exe_name, Container);
                             OnReadConfigItem?.Invoke(LI);
                             count++;
                         }
@@ -161,6 +163,12 @@ namespace tbm_launcher
                     case "run_background":
                         run_background = value == "1";
                         break;
+                    case "workdir":
+                        work_dir = value;
+                        break;
+                    case "executable_name":
+                        exe_name = value;
+                        break;
                     default:
                         EmitParseError("没有此配置项：" + settingName);
                         break;
@@ -170,7 +178,7 @@ namespace tbm_launcher
             if (!on_error && !is_system_config)
             {
                 LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.RETERVING_RUNNING_STATUS,
-                    req_check_cmd, count, status_check_method, run_background, Container);
+                    req_check_cmd, count, status_check_method, run_background, work_dir, exe_name, Container);
                 OnReadConfigItem?.Invoke(LI);
             }
         }

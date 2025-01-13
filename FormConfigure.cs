@@ -87,6 +87,24 @@ namespace tbm_launcher
 
             settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
             {
+                ConfigName = "workdir",
+                FriendlyConfigName = "工作目录",
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_FILE,
+                GetValueHandler = (LaunchInfoPlain p) => { return p.WorkingDirectory; },
+                SetValueHandler = (LaunchInfoPlain p, string val) => { p.WorkingDirectory = val; }
+            });
+
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            {
+                ConfigName = "executable_name",
+                FriendlyConfigName = "可执行文件名称",
+                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_STRING,
+                GetValueHandler = (LaunchInfoPlain p) => { return p.ExecutableName; },
+                SetValueHandler = (LaunchInfoPlain p, string val) => { p.ExecutableName = val; }
+            });
+
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            {
                 ConfigName = "run_background",
                 FriendlyConfigName = "在后台运行",
                 ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_BOOL,
@@ -113,6 +131,10 @@ namespace tbm_launcher
                     return info.StatusCheckMethod;
                 case "run_background":
                     return info.RunBackground ? "1" : "0";
+                case "workdir":
+                    return info.WorkingDirectory;
+                case "executable_name":
+                    return info.ExecutableName;
             }
             return "<Error Value>";
         }
@@ -145,6 +167,7 @@ namespace tbm_launcher
             InitializeConfigItem();
             RenderConfigItemList();
             textBox1.Text = SystemTitle;
+            Text = "Configure " + SystemTitle;
         }
 
         private void listConfig_SelectedIndexChanged(object sender, EventArgs e)
@@ -187,7 +210,9 @@ namespace tbm_launcher
                 PortNumber = 0,
                 Command = "",
                 RequirementCommand = "",
-                StatusCheckMethod = StatusCheckMethod.CHECK_PORT_USAGE
+                StatusCheckMethod = StatusCheckMethod.CHECK_PORT_USAGE,
+                ExecutableName = "",
+                WorkingDirectory = "",
             };
             listConfig.Items.Add(L);
             listConfig.SelectedIndex = listConfig.Items.Count - 1;

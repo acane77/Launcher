@@ -21,6 +21,8 @@ namespace tbm_launcher
         public string RequirementCommand;
         public string StatusCheckMethod;
         public bool RunBackground;
+        public string WorkingDirectory;
+        public string ExecutableName;
 
         public override string ToString()
         {
@@ -46,17 +48,25 @@ namespace tbm_launcher
         private bool run_background;
         private string requirement_test;
         private string status_check_method;
+        private string working_directory;
+        private string executable_name;
 
         public string Command { get { return command; } }
         public int PortNumber { get { return port; } }
         public string RequirementCommand { get { return requirement_test; } }
         public string StatusCheckMethod { get { return status_check_method; } }
         public bool RunBackground { get { return run_background; } }
+        public string WorkingDirectory { get { return working_directory; } }
+        public string ExecutableName { get { return executable_name; } }
 
         bool manual_terminate = false;
 
 
-        public LaunchInfo(string name, string command, int port, int status, string req, int index, string status_check_method, bool run_background, Panel container)
+        public LaunchInfo(string name, string command, int port, 
+                          int status, string req, int index, 
+                          string status_check_method, bool run_background, 
+                          string working_directory, string executable_name,
+                          Panel container)
         {
             this.name = name;
             this.command = command;
@@ -65,6 +75,8 @@ namespace tbm_launcher
             this.requirement_test = req;
             this.status_check_method = status_check_method;
             this.run_background = run_background;
+            this.working_directory = working_directory;
+            this.executable_name = executable_name;
             this._parent_control = container;
 
             const int height = 30;
@@ -151,13 +163,22 @@ namespace tbm_launcher
                 Command = Command,
                 RequirementCommand = RequirementCommand,
                 StatusCheckMethod = StatusCheckMethod,
-                RunBackground = RunBackground
+                RunBackground = RunBackground,
+                WorkingDirectory = WorkingDirectory,
+                ExecutableName = ExecutableName,
             };
         }
 
         bool getProcessRunningStatus()
         {
             string program_name = command.Split(" ".ToCharArray())[0].Split("\\/".ToCharArray()).Last().Trim();
+            if (!program_name.EndsWith(".exe")) {
+                program_name += ".exe";
+            }
+            if (executable_name.Trim() != "")
+            {
+                program_name = executable_name.Trim();
+            }
             Process[] processes = Process.GetProcesses();
             foreach (Process p in processes)
                 if (program_name.ToLower() == p.ProcessName.ToLower() || program_name.ToLower() == p.ProcessName.ToLower() + ".exe")
@@ -253,13 +274,13 @@ namespace tbm_launcher
 
         private int launch_get_return_code(string command)
         {
-            string executable = command.Split(new char[] { ' ' })[0];
-            string args = executable.Length == command.Length ? "" : command.Substring(executable.Length);
+            //string executable = command.Split(new char[] { ' ' })[0];
+            //string args = executable.Length == command.Length ? "" : command.Substring(executable.Length);
             try
             {
                 Process p = new Process();
-                p.StartInfo.FileName = executable;
-                p.StartInfo.Arguments = args;
+                p.StartInfo.FileName = "cmd.exe";
+                p.StartInfo.Arguments = "/c \"" + command.Replace("\\", "\\\\") + "\"";
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.Start();
@@ -295,6 +316,10 @@ namespace tbm_launcher
                 {
                     string program_name = command.Split(" ".ToCharArray())[0].Split("\\/".ToCharArray()).Last().Trim();
                     if (!program_name.EndsWith(".exe")) program_name += ".exe";
+                    if (executable_name.Trim().Length > 0)
+                    {
+                        program_name = executable_name.Trim();
+                    }
                     p.StartInfo.Arguments = "/im " + program_name + " /f";
                     identifier = program_name;
                 }
@@ -366,13 +391,18 @@ namespace tbm_launcher
 
         private void run_program(string command)
         {
-            string executable = command.Split(new char[] { ' ' })[0];
-            string args = executable.Length == command.Length ? "" : command.Substring(executable.Length);
+            //string executable = command.Split(new char[] { ' ' })[0];
+            //string args = executable.Length == command.Length ? "" : command.Substring(executable.Length);
             try
             {
                 Process p = new Process();
-                p.StartInfo.FileName = executable;
-                p.StartInfo.Arguments = args;
+                if (working_directory != null && working_directory.Length > 0)
+                {
+                    p.StartInfo.WorkingDirectory = working_directory;
+                }
+                p.StartInfo.FileName = "cmd.exe";
+                p.StartInfo.Arguments = "/c \"" + command.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
+                //MessageBox.Show(p.StartInfo.Arguments);
                 p.StartInfo.CreateNoWindow = true;
                 if (RunBackground)
                     p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
