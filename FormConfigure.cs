@@ -38,10 +38,19 @@ namespace tbm_launcher
             settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "command",
-                FriendlyConfigName = "命令",
+                FriendlyConfigName = "启动命令",
                 ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_FILE,
                 GetValueHandler = (LaunchInfoData p) => { return p.Command; },
                 SetValueHandler = (LaunchInfoData p, string val) => { p.Command = val; }
+            });
+
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
+            {
+                ConfigName = "stop_command",
+                FriendlyConfigName = "停止命令",
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_FILE,
+                GetValueHandler = (LaunchInfoData p) => { return p.StopCommand; },
+                SetValueHandler = (LaunchInfoData p, string val) => { p.StopCommand = val; }
             });
 
             settingItemConfigs.Add(new MetaInformation<LaunchInfoData>

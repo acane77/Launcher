@@ -147,6 +147,7 @@ namespace tbm_launcher
                 button.Location = new Point(container.Width - baseAdditionalButtonRight - 50, baseHeight - 3);
                 button.FlatStyle = FlatStyle.System;
                 button.Size = new Size(additionalButtonWidth, 28);
+                button.FlatStyle = FlatStyle.System;
                 button.Click += (object _s, EventArgs _e) =>
                 {
                     OpenFileDialog dialog = new OpenFileDialog();

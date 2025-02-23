@@ -31,6 +31,7 @@ namespace tbm_launcher
         public bool depend_resolvable;
         public string Name = "";
         public string Command = "";
+        public string StopCommand = "";
         public int PortNumber = 0;
         public string RequirementCommand = "";
         public string StatusCheckMethod = StatusCheckMethodEnum.CHECK_PORT_USAGE;
@@ -54,6 +55,9 @@ namespace tbm_launcher
                     break;
                 case "command":
                     Command = value;
+                    break;
+                case "stop_command":
+                    StopCommand = value;
                     break;
                 case "port":
                     try
@@ -100,6 +104,8 @@ namespace tbm_launcher
                     return Name;
                 case "command":
                     return Command;
+                case "stop_command":
+                    return StopCommand;
                 case "port":
                     return PortNumber.ToString();
                 case "requirement_command":
@@ -144,6 +150,7 @@ namespace tbm_launcher
         private int status;
 
         public string Command { get { return Data.Command; } }
+        public string StopCommand { get { return Data.StopCommand; } }
         public int PortNumber { get { return Data.PortNumber; } }
         public string RequirementCommand { get { return Data.RequirementCommand; } }
         public string StatusCheckMethod { get { return Data.StatusCheckMethod; } }
@@ -315,9 +322,8 @@ namespace tbm_launcher
             Ctrl_Launch.Enabled = false;
             Ctrl_Launch.Click += (object sender, EventArgs e) =>
             {
-
-                if (Status == 1) StopServiceInternal();
-                else StartServiceInternal();
+                if (Status == 1) StopService();
+                else StartService();
             };
             container.Controls.Add(Ctrl_Launch);
 
@@ -478,7 +484,30 @@ namespace tbm_launcher
         public void StopService()
         {
             if (Status == RunningStatus.RUNNING)
-                StopServiceInternal();
+            {
+                // MessageBox.Show(Ctrl_ParentControl.Parent, StopCommand);
+                if (StopCommand == null || StopCommand.Length == 0)
+                {
+                    StopServiceInternal();
+                }
+                else
+                {
+                    Thread th2 = new Thread(() =>
+                    {
+                        int ret_code = ExecuteGetReturnCode(StopCommand);
+                        if (ret_code != 0)
+                        {
+                            MessageBox.Show(Ctrl_ParentControl.Parent,
+                                "执行该操作指定的命令时发生了错误。\r\n\r\nreturn code: " + ret_code, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            Status = RunningStatus.STOPPED;
+                        }
+                    });
+                    th2.Start();
+                }
+            }
         }
 
         private bool CheckRequirements()
