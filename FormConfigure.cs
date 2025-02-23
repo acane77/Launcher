@@ -191,8 +191,9 @@ namespace tbm_launcher
             new_config_count++;
             LaunchInfoData L = new LaunchInfoData();
             L.Name = newConfigName;
-            listConfig.Items.Add(L);
-            listConfig.SelectedIndex = listConfig.Items.Count - 1;
+            int current_idx = listConfig.SelectedIndex;
+            listConfig.Items.Insert(listConfig.SelectedIndex + 1, L);
+            listConfig.SelectedIndex = current_idx + 1;
         }
 
         const string CRLF = "\r\n";
