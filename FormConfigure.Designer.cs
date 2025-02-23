@@ -30,7 +30,7 @@ namespace tbm_launcher
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.listConfig = new System.Windows.Forms.ListBox();
+            this.listConfig = new CusomizedListBox();
             this.btn_launch = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();

@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CusomizedListBox.cs" />
     <Compile Include="FormConfigure.cs">
       <SubType>Form</SubType>
     </Compile>

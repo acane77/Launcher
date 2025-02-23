@@ -32,8 +32,8 @@ namespace tbm_launcher
                 FriendlyConfigName = "服务名称",
                 ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_STRING,
                 GetValueHandler = (LaunchInfoData p) => { return p.Name; },
-                SetValueHandler = (LaunchInfoData p, string val) => { p.Name = val; }
-            });;
+                SetValueHandler = (LaunchInfoData p, string val) => { p.Name = val; listConfig.Invalidate(); }
+            });
 
             settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {

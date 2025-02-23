@@ -61,7 +61,6 @@ namespace tbm_launcher
  
             if (ProgramGlobalConfig.StartWithConfigureFlag)
             {
-                
                 button2_Click(null, null);
             }
             //buttonConfig.Show(); // todo remove it
