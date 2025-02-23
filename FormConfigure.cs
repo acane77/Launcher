@@ -214,5 +214,38 @@ namespace tbm_launcher
             string str = GenerateIniString();
             MessageBox.Show(str);
         }
+
+        private void btn_moveup_Click(object sender, EventArgs e)
+        {
+            if (listConfig.SelectedIndex <= 0)
+                return;
+            int sel = listConfig.SelectedIndex;
+            var tmp = listConfig.Items[sel];
+            listConfig.Items[sel] = listConfig.Items[sel - 1];
+            listConfig.Items[sel - 1] = tmp;
+            listConfig.SelectedIndex = sel - 1;
+        }
+
+        private void btn_movedown_Click(object sender, EventArgs e)
+        {
+            if (listConfig.SelectedIndex < 0 || listConfig.SelectedIndex >= listConfig.Items.Count - 1)
+                return;
+            int sel = listConfig.SelectedIndex;
+            var tmp = listConfig.Items[sel];
+            listConfig.Items[sel] = listConfig.Items[sel + 1];
+            listConfig.Items[sel + 1] = tmp;
+            listConfig.SelectedIndex = sel + 1;
+        }
+
+        private void move_copy_Click(object sender, EventArgs e)
+        {
+            if (listConfig.SelectedIndex == -1)
+                return;
+            int sel = listConfig.SelectedIndex;
+            LaunchInfoData obj = (listConfig.Items[sel] as LaunchInfoData).Clone();
+            obj.Name = obj.Name + " (Copy)";
+            listConfig.Items.Insert(sel + 1, obj);
+            listConfig.SelectedIndex = sel + 1;
+        }
     }
 }

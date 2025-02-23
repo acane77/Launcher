@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace tbm_launcher
         public static string NO_CHECK = "NO_CHECK";
     }
 
+    [Serializable]
     public class LaunchInfoData
     {
         public bool depend_resolvable;
@@ -124,6 +126,11 @@ namespace tbm_launcher
 
         public static string GetFieldValueString(string n, LaunchInfoData _this) {
             return _this.GetFieldValueString(n);
+        }
+        
+        public LaunchInfoData Clone()
+        {
+            return DeepCopy.Copy(this);
         }
     }
     public class LaunchInfo

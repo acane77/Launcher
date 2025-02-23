@@ -39,6 +39,9 @@ namespace tbm_launcher
             this.panel_config = new System.Windows.Forms.GroupBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.btn_moveup = new System.Windows.Forms.Button();
+            this.btn_movedown = new System.Windows.Forms.Button();
+            this.move_copy = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -151,6 +154,48 @@ namespace tbm_launcher
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // btn_moveup
+            // 
+            this.btn_moveup.BackgroundImage = global::tbm_launcher.Properties.Resources.moveup;
+            this.btn_moveup.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btn_moveup.FlatAppearance.BorderSize = 0;
+            this.btn_moveup.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+            this.btn_moveup.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_moveup.Location = new System.Drawing.Point(74, 426);
+            this.btn_moveup.Name = "btn_moveup";
+            this.btn_moveup.Size = new System.Drawing.Size(22, 22);
+            this.btn_moveup.TabIndex = 12;
+            this.btn_moveup.UseVisualStyleBackColor = true;
+            this.btn_moveup.Click += new System.EventHandler(this.btn_moveup_Click);
+            // 
+            // btn_movedown
+            // 
+            this.btn_movedown.BackgroundImage = global::tbm_launcher.Properties.Resources.movedown;
+            this.btn_movedown.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btn_movedown.FlatAppearance.BorderSize = 0;
+            this.btn_movedown.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+            this.btn_movedown.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_movedown.Location = new System.Drawing.Point(102, 426);
+            this.btn_movedown.Name = "btn_movedown";
+            this.btn_movedown.Size = new System.Drawing.Size(22, 22);
+            this.btn_movedown.TabIndex = 13;
+            this.btn_movedown.UseVisualStyleBackColor = true;
+            this.btn_movedown.Click += new System.EventHandler(this.btn_movedown_Click);
+            // 
+            // move_copy
+            // 
+            this.move_copy.BackgroundImage = global::tbm_launcher.Properties.Resources.copy;
+            this.move_copy.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.move_copy.FlatAppearance.BorderSize = 0;
+            this.move_copy.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+            this.move_copy.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.move_copy.Location = new System.Drawing.Point(130, 426);
+            this.move_copy.Name = "move_copy";
+            this.move_copy.Size = new System.Drawing.Size(22, 22);
+            this.move_copy.TabIndex = 14;
+            this.move_copy.UseVisualStyleBackColor = true;
+            this.move_copy.Click += new System.EventHandler(this.move_copy_Click);
+            // 
             // FormConfigure
             // 
             this.AcceptButton = this.button1;
@@ -158,6 +203,9 @@ namespace tbm_launcher
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(824, 476);
+            this.Controls.Add(this.move_copy);
+            this.Controls.Add(this.btn_movedown);
+            this.Controls.Add(this.btn_moveup);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panel_config);
             this.Controls.Add(this.button4);
@@ -196,5 +244,8 @@ namespace tbm_launcher
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.GroupBox panel_config;
         private CusomizedListBox listConfig;
+        private System.Windows.Forms.Button btn_moveup;
+        private System.Windows.Forms.Button btn_movedown;
+        private System.Windows.Forms.Button move_copy;
     }
 }

@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CusomizedListBox.cs" />
+    <Compile Include="DeepCopy.cs" />
     <Compile Include="FormConfigure.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +105,9 @@
     <None Include="Resources\Settings_16x.png" />
     <None Include="Resources\del.png" />
     <None Include="Resources\add2.png" />
+    <None Include="Resources\copy.png" />
+    <None Include="Resources\movedown.png" />
+    <None Include="Resources\moveup.png" />
     <Content Include="Rud3boy-Mac-Apps-Launcher.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
