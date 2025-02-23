@@ -12,172 +12,341 @@ using System.Windows.Forms;
 
 namespace tbm_launcher
 {
-    public class LaunchInfoPlain
+    public class InvalidConfigureValueError : Exception {
+        public InvalidConfigureValueError() : 
+            base("分析配置文件时出现了错误。") { }
+
+        public InvalidConfigureValueError(string msg) : base(msg) { }
+    }
+
+    public class StatusCheckMethodEnum
+    {
+        public static string CHECK_PORT_USAGE = "PORT_USAGE";
+        public static string CHECK_EXECUTABLE_EXISTANCE = "EXECUTABLE_EXISTANCE";
+        public static string NO_CHECK = "NO_CHECK";
+    }
+
+    public class LaunchInfoData
     {
         public bool depend_resolvable;
-        public string Name;
-        public string Command;
-        public int PortNumber;
-        public string RequirementCommand;
-        public string StatusCheckMethod;
-        public bool RunBackground;
-        public string WorkingDirectory;
-        public string ExecutableName;
+        public string Name = "";
+        public string Command = "";
+        public int PortNumber = 0;
+        public string RequirementCommand = "";
+        public string StatusCheckMethod = StatusCheckMethodEnum.CHECK_PORT_USAGE;
+        public bool RunBackground = false;
+        public string WorkingDirectory = "";
+        public string ExecutableName = "";
 
         public override string ToString()
         {
             return Name;
         }
 
+        public void SetFieldsFromString(string setting_name, string value)
+        {
+            switch (setting_name)
+            {
+                case "comment":
+                    break;
+                case "name":
+                    Name = value;
+                    break;
+                case "command":
+                    Command = value;
+                    break;
+                case "port":
+                    try
+                    {
+                        PortNumber = Int32.Parse(value);
+                        if (PortNumber < 0 || PortNumber > 65535)
+                            throw new InvalidConfigureValueError("端口号取值范围是 0-65535.");
+                    }
+                    catch (Exception ee) { throw new InvalidConfigureValueError(ee.Message); }
+                    break;
+                case "requirement_command":
+                    RequirementCommand = value;
+                    break;
+                case "status_check_method":
+                    if (value != StatusCheckMethodEnum.CHECK_EXECUTABLE_EXISTANCE && 
+                        value != StatusCheckMethodEnum.CHECK_PORT_USAGE && 
+                        value != StatusCheckMethodEnum.NO_CHECK)
+                        throw new InvalidConfigureValueError("配置项：错误的启动状态检查方式：" + value +
+                            ", 可选的值有：" + 
+                            StatusCheckMethodEnum.CHECK_PORT_USAGE + "," + 
+                            StatusCheckMethodEnum.NO_CHECK + "和" + 
+                            StatusCheckMethodEnum.CHECK_EXECUTABLE_EXISTANCE);
+                    StatusCheckMethod = value;
+                    break;
+                case "run_background":
+                    RunBackground = value == "1";
+                    break;
+                case "workdir":
+                    WorkingDirectory = value;
+                    break;
+                case "executable_name":
+                    ExecutableName = value;
+                    break;
+                default:
+                    throw new InvalidConfigureValueError("没有此配置项：" + setting_name);
+            }
+        }
+
+        public string GetFieldValueString(string nameInConfig)
+        {
+            switch (nameInConfig)
+            {
+                case "name":
+                    return Name;
+                case "command":
+                    return Command;
+                case "port":
+                    return PortNumber.ToString();
+                case "requirement_command":
+                    return RequirementCommand;
+                case "status_check_method":
+                    return StatusCheckMethod;
+                case "run_background":
+                    return RunBackground ? "1" : "0";
+                case "workdir":
+                    return WorkingDirectory;
+                case "executable_name":
+                    return ExecutableName;
+            }
+            return "<Error Value>";
+        }
+
+        public static string GetFieldValueString(string n, LaunchInfoData _this) {
+            return _this.GetFieldValueString(n);
+        }
     }
     public class LaunchInfo
     {
-        private Label _obj_status;
-        private Label _obj_name;
-        private Label _port;
-        private Button _lnk_launch;
-        private Button _lnk_change_port;
-        private Button _lnk_inst_req;
-        private Panel _parent_control;
+        public class RunningStatus
+        {
+            public const int RETERVING_RUNNING_STATUS = 0;
+            public const int RUNNING = 1;
+            public const int STOPPED = 2;
+            public const int LACK_OF_DEPENDENCIES = 3;
+            public const int PROCESSING = 4;
+            public const int FAILED = 6;
+            public const int CONFIG_ERROR = 7;
+        }
 
-        private bool depend_resolvable;
-        private string name;
-        private string command;
-        private int port;
+        private Label Ctrl_Status = null;
+        private Label Ctrl_Name = null;
+        private Label Ctrl_Port = null;
+        private Button Ctrl_Launch = null;
+        private Button Ctrl_ChangePort = null;
+        private Button Ctrl_InstallRequirement = null;
+        private Panel Ctrl_ParentControl = null;
+        public LaunchInfoData Data = new LaunchInfoData();
         private int status;
-        private bool run_background;
-        private string requirement_test;
-        private string status_check_method;
-        private string working_directory;
-        private string executable_name;
 
-        public string Command { get { return command; } }
-        public int PortNumber { get { return port; } }
-        public string RequirementCommand { get { return requirement_test; } }
-        public string StatusCheckMethod { get { return status_check_method; } }
-        public bool RunBackground { get { return run_background; } }
-        public string WorkingDirectory { get { return working_directory; } }
-        public string ExecutableName { get { return executable_name; } }
+        public string Command { get { return Data.Command; } }
+        public int PortNumber { get { return Data.PortNumber; } }
+        public string RequirementCommand { get { return Data.RequirementCommand; } }
+        public string StatusCheckMethod { get { return Data.StatusCheckMethod; } }
+        public bool RunBackground { get { return Data.RunBackground; } }
+        public string WorkingDirectory { get { return Data.WorkingDirectory; } }
+        public string ExecutableName { get { return Data.ExecutableName; } }
+
+
+        public string Name
+        {
+            get { return Data.Name; }
+            set { Data.Name = value; Ctrl_Name.Text = Data.Name; }
+        }
+
+        public int Port
+        {
+            get { return Data.PortNumber; }
+            set { Data.PortNumber = value; Ctrl_Port.Text = value.ToString(); }
+        }
+
+        private int Status
+        {
+            get { return status; }
+            set
+            {
+                try
+                {
+                    status = value;
+                    if (status == RunningStatus.RETERVING_RUNNING_STATUS)
+                    {
+                        Ctrl_Status.Text = "获取运行信息...";
+                        Ctrl_Launch.Show();
+                        Ctrl_Status.ForeColor = Color.Gray;
+                        Ctrl_Launch.Enabled = false;
+                        Ctrl_Launch.Text = "启动";
+                        if (StatusCheckMethod == StatusCheckMethodEnum.NO_CHECK)
+                        {
+                            Ctrl_Launch.Text = "打开";
+                        }
+                    }
+                    else if (status == RunningStatus.RUNNING)
+                    {
+                        Ctrl_Status.Text = "正在运行";
+                        Ctrl_Status.ForeColor = Color.Green;
+                        Ctrl_Launch.Enabled = true;
+                        Ctrl_Launch.Text = "停止";
+                    }
+                    else if (status == RunningStatus.STOPPED)
+                    {
+                        Ctrl_Status.Text = "已停止";
+                        Ctrl_Status.ForeColor = Color.Gray;
+                        Ctrl_Launch.Enabled = true;
+                        Ctrl_Launch.Text = "启动";
+                        Ctrl_InstallRequirement.Hide();
+                        if (StatusCheckMethod == StatusCheckMethodEnum.NO_CHECK)
+                        {
+                            Ctrl_Launch.Text = "打开";
+                        }
+                    }
+                    else if (status == RunningStatus.LACK_OF_DEPENDENCIES)
+                    {
+                        Ctrl_Status.Text = "缺少依赖";
+                        Ctrl_Status.ForeColor = Color.Red;
+                        Ctrl_Launch.Hide();
+                        Ctrl_InstallRequirement.Show();
+                    }
+                    else if (status == RunningStatus.PROCESSING)
+                    {
+                        Ctrl_Status.Text = "正在处理";
+                        Ctrl_Status.ForeColor = Color.Black;
+                        Ctrl_InstallRequirement.Hide();
+                        Ctrl_Launch.Enabled = false;
+                    }
+                    else if (status == RunningStatus.FAILED)
+                    {
+                        Ctrl_Status.Text = "运行失败";
+                        Ctrl_Launch.Text = "启动";
+                        Ctrl_Status.ForeColor = Color.Red;
+                        if (StatusCheckMethod == StatusCheckMethodEnum.NO_CHECK)
+                        {
+                            Ctrl_Launch.Text = "打开";
+                        }
+                    }
+                    else if (status == RunningStatus.CONFIG_ERROR)
+                    {
+                        Ctrl_Status.Text = "配置文件错误";
+                        Ctrl_Status.ForeColor = Color.Red;
+                        Ctrl_Launch.Hide();
+                        Ctrl_InstallRequirement.Show();
+                    }
+
+                    if (status == RunningStatus.RUNNING)
+                    {
+                        Ctrl_Port.ForeColor = Color.Blue;
+                        Ctrl_Port.Cursor = Cursors.Hand;
+                        Ctrl_Port.Font = new Font(Ctrl_ParentControl.Font, FontStyle.Underline);
+                    }
+                    else
+                    {
+                        Ctrl_Port.ForeColor = Color.Black;
+                        Ctrl_Port.Cursor = Cursors.Default;
+                        Ctrl_Port.Font = Ctrl_ParentControl.Font;
+                    }
+                }
+                catch (Exception)
+                {
+                    // Do nothing
+                }
+            }
+        }
 
         bool manual_terminate = false;
 
-
-        public LaunchInfo(string name, string command, int port, 
-                          int status, string req, int index, 
-                          string status_check_method, bool run_background, 
-                          string working_directory, string executable_name,
-                          Panel container)
+        public LaunchInfo(LaunchInfoData data, int ctrl_index, Panel container)
         {
-            this.name = name;
-            this.command = command;
-            this.port = port;
-            this.status = status;
-            this.requirement_test = req;
-            this.status_check_method = status_check_method;
-            this.run_background = run_background;
-            this.working_directory = working_directory;
-            this.executable_name = executable_name;
-            this._parent_control = container;
+            this.Ctrl_ParentControl = container;
+            this.Data = data;
 
-            const int height = 30;
+            const int height = 30; // TODO: make it DPI-aware
 
-            _obj_name = new Label();
-            _obj_name.Text = name;
-            _obj_name.Location = new Point(0, height * index);
-            _obj_name.Width = 195;
-            container.Controls.Add(_obj_name);
+            Ctrl_Name = new Label();
+            Name = Data.Name;
+            Ctrl_Name.Location = new Point(0, height * ctrl_index);
+            Ctrl_Name.Width = 195;
+            container.Controls.Add(Ctrl_Name);
 
-            _obj_status = new Label();
-            _obj_status.Text = "获取运行信息...";
-            _obj_status.ForeColor = Color.Gray;
-            _obj_status.Location = new Point(200, height * index);
-            if (status_check_method != IniConfigReader.StatusCheckMethod.NO_CHECK)
+            Ctrl_Status = new Label();
+            Ctrl_Status.Text = "获取运行信息...";
+            Ctrl_Status.ForeColor = Color.Gray;
+            Ctrl_Status.Location = new Point(200, height * ctrl_index);
+            if (Data.StatusCheckMethod != StatusCheckMethodEnum.NO_CHECK)
             {
-                container.Controls.Add(_obj_status);
+                container.Controls.Add(Ctrl_Status);
             }
 
-            _port = new Label();
-            _port.Text = port.ToString();
-            _port.Location = new Point(300, height * index);
-            _port.Width = 50;
-            _port.Click += (object s, EventArgs e) =>
+            Ctrl_Port = new Label();
+            Port = data.PortNumber;
+            Ctrl_Port.Location = new Point(300, height * ctrl_index);
+            Ctrl_Port.Width = 50;
+            Ctrl_Port.Click += (object s, EventArgs e) =>
             {
                 if (Status == 1)
                 {
-                    Process.Start("http://127.0.0.1:" + port + "/");
+                    Process.Start("http://127.0.0.1:" + Port + "/");
                 }
             };
-            _port.MouseEnter += (object s, EventArgs e) => {
+            Ctrl_Port.MouseEnter += (object s, EventArgs e) => {
                 if (Status == 1)
                 {
-                    _port.ForeColor = Color.Purple;
+                    Ctrl_Port.ForeColor = Color.Purple;
                     //Cursor.Current = Cursors.Hand;
                 }
             };
-            _port.MouseLeave += (object sender, EventArgs e) =>
+            Ctrl_Port.MouseLeave += (object sender, EventArgs e) =>
             {
                 if (Status == 1)
                 {
-                    _port.ForeColor = Color.Blue;
+                    Ctrl_Port.ForeColor = Color.Blue;
                     //Cursor.Current = Cursors.Default;
                 }
             };
             if (Port > 0)
-                container.Controls.Add(_port);
+                container.Controls.Add(Ctrl_Port);
 
-            _lnk_launch = new Button();
-            _lnk_launch.Text = "启动";
-            _lnk_launch.Location = new Point(360, height * index);
-            _lnk_launch.FlatStyle = FlatStyle.System;
-            _lnk_launch.Enabled = false;
-            _lnk_launch.Click += (object sender, EventArgs e) =>
+            Ctrl_Launch = new Button();
+            Ctrl_Launch.Text = "启动";
+            Ctrl_Launch.Location = new Point(360, height * ctrl_index);
+            Ctrl_Launch.FlatStyle = FlatStyle.System;
+            Ctrl_Launch.Enabled = false;
+            Ctrl_Launch.Click += (object sender, EventArgs e) =>
             {
 
-                if (Status == 1) end();
-                else start();
+                if (Status == 1) StopServiceInternal();
+                else StartServiceInternal();
             };
-            container.Controls.Add(_lnk_launch);
+            container.Controls.Add(Ctrl_Launch);
 
-            _lnk_change_port = new Button();
-            _lnk_change_port.Text = "Change Port";
-            _lnk_change_port.Location = new Point(420, height * index);
-            _lnk_change_port.Visible = false;
-            _lnk_change_port.FlatStyle = FlatStyle.System;
-            //container.Controls.Add(_lnk_change_port);
+            Ctrl_ChangePort = new Button();
+            Ctrl_ChangePort.Text = "Change Port";
+            Ctrl_ChangePort.Location = new Point(420, height * ctrl_index);
+            Ctrl_ChangePort.Visible = false;
+            Ctrl_ChangePort.FlatStyle = FlatStyle.System;
+            //container.Controls.Add(Ctrl_ChangePort);
 
-            _lnk_inst_req = new Button();
-            _lnk_inst_req.Text = "安装依赖";
-            _lnk_inst_req.Visible = false;
-            _lnk_inst_req.Location = new Point(260, height * index);
-            _lnk_inst_req.FlatStyle = FlatStyle.System;
-            container.Controls.Add(_lnk_inst_req);
+            Ctrl_InstallRequirement = new Button();
+            Ctrl_InstallRequirement.Text = "安装依赖";
+            Ctrl_InstallRequirement.Visible = false;
+            Ctrl_InstallRequirement.Location = new Point(260, height * ctrl_index);
+            Ctrl_InstallRequirement.FlatStyle = FlatStyle.System;
+            container.Controls.Add(Ctrl_InstallRequirement);
 
             RetriveRunningInformation();
         }
 
-        public LaunchInfoPlain GetLauncherInfoPlain()
+        bool GetProcessRunningStatus()
         {
-            return new LaunchInfoPlain {
-                Name = name,
-                PortNumber = PortNumber,
-                Command = Command,
-                RequirementCommand = RequirementCommand,
-                StatusCheckMethod = StatusCheckMethod,
-                RunBackground = RunBackground,
-                WorkingDirectory = WorkingDirectory,
-                ExecutableName = ExecutableName,
-            };
-        }
-
-        bool getProcessRunningStatus()
-        {
-            string program_name = command.Split(" ".ToCharArray())[0].Split("\\/".ToCharArray()).Last().Trim();
+            string program_name = Command.Split(" ".ToCharArray())[0].Split("\\/".ToCharArray()).Last().Trim();
             if (!program_name.EndsWith(".exe")) {
                 program_name += ".exe";
             }
-            if (executable_name.Trim() != "")
+            if (ExecutableName.Trim() != "")
             {
-                program_name = executable_name.Trim();
+                program_name = ExecutableName.Trim();
             }
             Process[] processes = Process.GetProcesses();
             foreach (Process p in processes)
@@ -188,7 +357,7 @@ namespace tbm_launcher
 
         public void RetriveRunningInformation(bool slient = false)
         {
-            if (StatusCheckMethod == IniConfigReader.StatusCheckMethod.NO_CHECK)
+            if (StatusCheckMethod == StatusCheckMethodEnum.NO_CHECK)
             {
                 Status = RunningStatus.STOPPED;
                 return;
@@ -199,17 +368,18 @@ namespace tbm_launcher
                 //bool isOpened = IsPortOpen("127.0.0.1", port, TimeSpan.FromMilliseconds(1000));
 
                 bool isOpened = false;
-                if (status_check_method == IniConfigReader.StatusCheckMethod.CHECK_PORT_USAGE)
+                if (StatusCheckMethod == StatusCheckMethodEnum.CHECK_PORT_USAGE)
                 {
                     TcpHelperUtil tcpHelper = new TcpHelperUtil();
-                    isOpened = tcpHelper.GetPortDetails(port).Item1;
+                    isOpened = tcpHelper.GetPortDetails(Port).Item1;
                 }
-                else if (status_check_method == IniConfigReader.StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE)
+                else if (StatusCheckMethod == StatusCheckMethodEnum.CHECK_EXECUTABLE_EXISTANCE)
                 {
-                    isOpened = getProcessRunningStatus();
+                    isOpened = GetProcessRunningStatus();
                 }
                 else
                 {
+                    Name = "InvalidStatusCheck [" + StatusCheckMethod + "]";
                     Status = RunningStatus.CONFIG_ERROR;
                     return;
                 }
@@ -217,62 +387,15 @@ namespace tbm_launcher
                     Status = RunningStatus.RUNNING;
                     return;
                 }
-                bool reqSat = check_requirements();
+                bool reqSat = CheckRequirements();
                 if (!reqSat) Status = RunningStatus.LACK_OF_DEPENDENCIES;
                 else Status = RunningStatus.STOPPED;
             });
             th.Start();
         }
 
-        public string Name
-        {
-            get { return name; }
-            set { name = value; _obj_name.Text = name; }
-        }
 
-        public int Port
-        {
-            get { return port; }
-            set { port = value; _port.Text = value.ToString(); }
-        }
-
-        public class RunningStatus
-        {
-            public const int RETERVING_RUNNING_STATUS = 0;
-            public const int RUNNING = 1;
-            public const int STOPPED = 2;
-            public const int LACK_OF_DEPENDENCIES = 3;
-            public const int PROCESSING = 4;
-            public const int FAILED = 6;
-            public const int CONFIG_ERROR = 7;
-        } 
-
-        private int Status
-        {
-            get { return status; }
-            set
-            {
-                try
-                {
-                    status = value;
-                    if (status == 0) { _obj_status.Text = "获取运行信息..."; _lnk_launch.Show(); _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = false; _lnk_launch.Text = "启动"; if (status_check_method == IniConfigReader.StatusCheckMethod.NO_CHECK) { _lnk_launch.Text = "打开"; }  }
-                    else if (status == 1) { _obj_status.Text = "正在运行"; _obj_status.ForeColor = Color.Green; _lnk_launch.Enabled = true; _lnk_launch.Text = "停止"; }
-                    else if (status == 2) { _obj_status.Text = "已停止"; _obj_status.ForeColor = Color.Gray; _lnk_launch.Enabled = true; _lnk_launch.Text = "启动"; _lnk_inst_req.Hide(); if (status_check_method == IniConfigReader.StatusCheckMethod.NO_CHECK) { _lnk_launch.Text = "打开"; } }
-                    else if (status == 3) { _obj_status.Text = "缺少依赖"; _obj_status.ForeColor = Color.Red; _lnk_launch.Hide(); _lnk_inst_req.Show(); }
-                    else if (status == 4) { _obj_status.Text = "正在处理"; _obj_status.ForeColor = Color.Black; _lnk_inst_req.Hide(); _lnk_launch.Enabled = false; }
-                    else if (status == 6) { _obj_status.Text = "运行失败"; _lnk_launch.Text = "启动"; _obj_status.ForeColor = Color.Red; if (status_check_method == IniConfigReader.StatusCheckMethod.NO_CHECK) { _lnk_launch.Text = "打开"; } }
-                    else if (status == 7) { _obj_status.Text = "配置文件错误"; _obj_status.ForeColor = Color.Red; _lnk_launch.Hide(); _lnk_inst_req.Show(); }
-                    if (status == 1) { _port.ForeColor = Color.Blue; _port.Cursor = Cursors.Hand; _port.Font = new Font(_parent_control.Font, FontStyle.Underline); }
-                    else { _port.ForeColor = Color.Black; _port.Cursor = Cursors.Default; _port.Font = _parent_control.Font; }
-                }
-                catch (Exception ee)
-                {
-                    
-                }
-            }
-        }
-
-        private int launch_get_return_code(string command)
+        private int ExecuteGetReturnCode(string command)
         {
             //string executable = command.Split(new char[] { ' ' })[0];
             //string args = executable.Length == command.Length ? "" : command.Substring(executable.Length);
@@ -287,13 +410,13 @@ namespace tbm_launcher
                 p.WaitForExit();
                 return p.ExitCode;
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 return -1;
             }
         }
 
-        private void end()
+        private void StopServiceInternal()
         {
             manual_terminate = true;
             Status = RunningStatus.PROCESSING;
@@ -304,21 +427,21 @@ namespace tbm_launcher
                 p.StartInfo.FileName = ("taskkill.exe");
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                if (status_check_method == IniConfigReader.StatusCheckMethod.CHECK_PORT_USAGE)
+                if (StatusCheckMethod == StatusCheckMethodEnum.CHECK_PORT_USAGE)
                 {
                     TcpHelperUtil tcpHelper = new TcpHelperUtil();
-                    var details = tcpHelper.GetPortDetails(port);
+                    var details = tcpHelper.GetPortDetails(PortNumber);
                     if (details.Item1)
                         p.StartInfo.Arguments = "/pid " + details.Item2.ProcessID + " /f";
                     identifier = details.Item2.ProcessID.ToString();
                 }
-                else if (status_check_method == IniConfigReader.StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE)
+                else if (StatusCheckMethod == StatusCheckMethodEnum.CHECK_EXECUTABLE_EXISTANCE)
                 {
-                    string program_name = command.Split(" ".ToCharArray())[0].Split("\\/".ToCharArray()).Last().Trim();
+                    string program_name = Command.Split(" ".ToCharArray())[0].Split("\\/".ToCharArray()).Last().Trim();
                     if (!program_name.EndsWith(".exe")) program_name += ".exe";
-                    if (executable_name.Trim().Length > 0)
+                    if (ExecutableName.Trim().Length > 0)
                     {
-                        program_name = executable_name.Trim();
+                        program_name = ExecutableName.Trim();
                     }
                     p.StartInfo.Arguments = "/im " + program_name + " /f";
                     identifier = program_name;
@@ -329,46 +452,48 @@ namespace tbm_launcher
                     Status = RunningStatus.STOPPED;
                 else
                 {
-                    MessageBox.Show(_parent_control.Parent, "执行该操作的时候发生了错误。\r\n可能是因为\r\n   (1)该程序已经停止运行\r\n   (2)该程序的启动命令并不包含实际执行的应用的名称\r\n\r\nreturn code: " + p.ExitCode + "\r\nidentifier: " + identifier, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(Ctrl_ParentControl.Parent, "执行该操作的时候发生了错误。\r\n可能是因为\r\n   (1)该程序已经停止运行\r\n   (2)该程序的启动命令并不包含实际执行的应用的名称\r\n\r\nreturn code: " + p.ExitCode + "\r\nidentifier: " + identifier, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Status = RunningStatus.STOPPED;
                 }
             });
             th2.Start();
         }
 
-        private void start()
+        private void StartServiceInternal()
         {
             manual_terminate = false;
             Thread th1 = new Thread(() => {
                 Status = RunningStatus.PROCESSING;
-                run_program(command.Replace("{port}", "" + port));
+                ExecuteDeteched(Command.Replace("{port}", "" + PortNumber));
             });
             th1.Start();
         }
 
-        public void Start()
+        public void StartService()
         {
             if (Status == RunningStatus.STOPPED || Status == RunningStatus.FAILED)
-                start();
+                StartServiceInternal();
         }
 
-        public void End()
+        public void StopService()
         {
             if (Status == RunningStatus.RUNNING)
-                end();
+                StopServiceInternal();
         }
 
-        private bool check_requirements()
+        private bool CheckRequirements()
         {
-            if (requirement_test == "CHECK_EXISTANCE")
+            if (RequirementCommand == "CHECK_EXISTANCE")
             {
-                return File.Exists(command.Split(" ".ToCharArray())[0].Trim());
+                if (ExecutableName != "")
+                    return File.Exists(ExecutableName);
+                return File.Exists(Command.Split(" ".ToCharArray())[0].Trim());
             }
-            if (requirement_test == "DO_NOT_CHECK") 
+            if (RequirementCommand == "DO_NOT_CHECK") 
             {
                 return true;    
             }
-            return launch_get_return_code(requirement_test) == 0;
+            return ExecuteGetReturnCode(RequirementCommand) == 0;
         }
 
         bool IsPortOpen(string host, int port, TimeSpan timeout)
@@ -389,16 +514,16 @@ namespace tbm_launcher
             }
         }
 
-        private void run_program(string command)
+        private void ExecuteDeteched(string command)
         {
             //string executable = command.Split(new char[] { ' ' })[0];
             //string args = executable.Length == command.Length ? "" : command.Substring(executable.Length);
             try
             {
                 Process p = new Process();
-                if (working_directory != null && working_directory.Length > 0)
+                if (WorkingDirectory != null && WorkingDirectory.Length > 0)
                 {
-                    p.StartInfo.WorkingDirectory = working_directory;
+                    p.StartInfo.WorkingDirectory = WorkingDirectory;
                 }
                 p.StartInfo.FileName = "cmd.exe";
                 p.StartInfo.Arguments = "/c \"" + command.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
@@ -409,7 +534,7 @@ namespace tbm_launcher
                 p.Start();
                 Status = RunningStatus.RUNNING;
 
-                if (StatusCheckMethod != IniConfigReader.StatusCheckMethod.NO_CHECK)
+                if (StatusCheckMethod != StatusCheckMethodEnum.NO_CHECK)
                     p.WaitForExit();
                 if (p.ExitCode == 0 || manual_terminate)
                 {

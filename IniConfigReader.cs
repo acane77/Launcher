@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace tbm_launcher
 {
+
+    
+
     class IniConfigReader
     {
         string content;
@@ -21,12 +24,6 @@ namespace tbm_launcher
 
         public OnReadConfigItemDelegate OnReadConfigItem = null;
         public OnLoadConfigError onLoadConfigError = null;
-
-        public class StatusCheckMethod {
-            public static string CHECK_PORT_USAGE = "PORT_USAGE";
-            public static string CHECK_EXECUTABLE_EXISTANCE = "EXECUTABLE_EXISTANCE";
-            public static string NO_CHECK = "NO_CHECK";
-        }
 
         public IniConfigReader(string filename)
         {
@@ -51,16 +48,9 @@ namespace tbm_launcher
         {
             string[] lines = content.Split("\n".ToCharArray());
 
-            string name = "";
-            string command = "";
-            int port = 0;
-            string req_check_cmd = "";
-            bool run_background = true;
-            string status_check_method = "CHECK_PORT_USAGE"; // CHECK_EXECUTABLE_EXISTANCE    CHECK_PORT_USAGE
-            bool initialized = false;
-            string exe_name = "";
-            string work_dir = "";
+            LaunchInfoData data = new LaunchInfoData();
 
+            bool initialized = false;
             int line_no = 0;
             int count = 0;
             bool on_error = false;
@@ -69,8 +59,7 @@ namespace tbm_launcher
             EmitParseErrorFuncTy EmitParseError = (string what) =>
             {
                 if (is_system_config) return;
-                LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.CONFIG_ERROR, 
-                        req_check_cmd, count, status_check_method, run_background, work_dir, exe_name, Container);
+                LaunchInfo LI = new LaunchInfo(data, count, Container);
                 ParseError err = new ParseError(line_no, what);
                 onLoadConfigError?.Invoke(LI, err);
                 on_error = true;
@@ -86,8 +75,8 @@ namespace tbm_launcher
                     {
                         if (!on_error && !is_system_config)
                         {
-                            LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.RETERVING_RUNNING_STATUS, 
-                                req_check_cmd, count, status_check_method, run_background, work_dir, exe_name, Container);
+                            LaunchInfo LI = new LaunchInfo(data, count, Container);
+                            data = new LaunchInfoData();
                             OnReadConfigItem?.Invoke(LI);
                             count++;
                         }
@@ -99,10 +88,10 @@ namespace tbm_launcher
                         is_system_config = true;
                     }
                     else is_system_config = false;
-                    name = line.Replace("[", "").Replace("]", "");
-                    command = "";
-                    port = 0;
-                    req_check_cmd = "";
+                    data.Name = line.Replace("[", "").Replace("]", "");
+                    data.Command = "";
+                    data.PortNumber = 0;
+                    data.RequirementCommand = "";
                     on_error = false;
                     continue;
                 }
@@ -126,59 +115,28 @@ namespace tbm_launcher
                     continue;
                 }
                 // if (on_error) continue;
-                string[] parts = line.Split("=".ToCharArray());
+                string[] parts = line.Split("=".ToCharArray(), 2);
                 if (parts.Length < 2)
                 {
                     EmitParseError("配置项格式错误");
                 }
                 string settingName = parts[0].Trim().ToLower();
                 string value = line.Substring(parts[0].Length+1).Trim();
-                switch (settingName)
+                try
                 {
-                    case "comment":
-                        break;
-                    case "name":
-                        name = value;
-                        break;
-                    case "command":
-                        command = value;
-                        break;
-                    case "port":
-                        try { 
-                            port = Int32.Parse(value);
-                            if (port < 0 || port > 65535)
-                                EmitParseError("端口号取值范围是 0-65535.");
-                        }
-                        catch (Exception ee) { EmitParseError(ee.Message); }
-                        break;
-                    case "requirement_command":
-                        req_check_cmd = value;
-                        break;
-                    case "status_check_method":
-                        if (value != StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE && value != StatusCheckMethod.CHECK_PORT_USAGE && value != StatusCheckMethod.NO_CHECK)
-                            EmitParseError("配置项：错误的启动状态检查方式：" + value +
-                                ", 可选的值有：" + StatusCheckMethod.CHECK_PORT_USAGE + "," + StatusCheckMethod.NO_CHECK + "和" + StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE);
-                        status_check_method = value;
-                        break;
-                    case "run_background":
-                        run_background = value == "1";
-                        break;
-                    case "workdir":
-                        work_dir = value;
-                        break;
-                    case "executable_name":
-                        exe_name = value;
-                        break;
-                    default:
-                        EmitParseError("没有此配置项：" + settingName);
-                        break;
+                    data.SetFieldsFromString(settingName, value);
                 }
+                catch (InvalidConfigureValueError e)
+                {
+                    EmitParseError(e.Message);
+                }
+                
             }
 
             if (!on_error && !is_system_config)
             {
-                LaunchInfo LI = new LaunchInfo(name, command, port, LaunchInfo.RunningStatus.RETERVING_RUNNING_STATUS,
-                    req_check_cmd, count, status_check_method, run_background, work_dir, exe_name, Container);
+                LaunchInfo LI = new LaunchInfo(data, count, Container);
+                data = new LaunchInfoData();
                 OnReadConfigItem?.Invoke(LI);
             }
         }

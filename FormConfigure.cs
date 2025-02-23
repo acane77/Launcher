@@ -20,123 +20,99 @@ namespace tbm_launcher
         }
 
         public List<LaunchInfo> IniConfigureList = null;
-        List<MetaInformation<LaunchInfoPlain>> settingItemConfigs = new List<MetaInformation<LaunchInfoPlain>>();
+        List<MetaInformation<LaunchInfoData>> settingItemConfigs = new List<MetaInformation<LaunchInfoData>>();
         public string SystemTitle = "";
 
         void InitializeConfigItem()
         {
             settingItemConfigs.Clear();
-            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "name",
                 FriendlyConfigName = "服务名称",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_STRING,
-                GetValueHandler = (LaunchInfoPlain p) => { return p.Name; },
-                SetValueHandler = (LaunchInfoPlain p, string val) => { p.Name = val; }
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_STRING,
+                GetValueHandler = (LaunchInfoData p) => { return p.Name; },
+                SetValueHandler = (LaunchInfoData p, string val) => { p.Name = val; }
             });;
 
-            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "command",
                 FriendlyConfigName = "命令",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_FILE,
-                GetValueHandler = (LaunchInfoPlain p) => { return p.Command; },
-                SetValueHandler = (LaunchInfoPlain p, string val) => { p.Command = val; }
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_FILE,
+                GetValueHandler = (LaunchInfoData p) => { return p.Command; },
+                SetValueHandler = (LaunchInfoData p, string val) => { p.Command = val; }
             });
 
-            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "port",
                 FriendlyConfigName = "端口",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_INT,
-                GetValueHandler = (LaunchInfoPlain p) => { return p.PortNumber.ToString(); },
-                SetValueHandler = (LaunchInfoPlain p, string val) => {
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_INT,
+                GetValueHandler = (LaunchInfoData p) => { return p.PortNumber.ToString(); },
+                SetValueHandler = (LaunchInfoData p, string val) => {
                     try { p.PortNumber = Int32.Parse(val); }
                     catch { p.PortNumber = 0; }    
                 }
             });
 
-            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "requirement_command",
                 FriendlyConfigName = "依赖检查命令",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_FILE,
-                ListItems = new List<MetaInformation<LaunchInfoPlain>.ListItem>
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_FILE,
+                ListItems = new List<MetaInformation<LaunchInfoData>.ListItem>
                 {
-                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "检查文件是否存在", Value = "CHECK_EXISTANCE" },
-                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "不检查依赖", Value = "DO_NOT_CHECK" },
+                    new MetaInformation<LaunchInfoData>.ListItem{ Name = "检查文件是否存在", Value = "CHECK_EXISTANCE" },
+                    new MetaInformation<LaunchInfoData>.ListItem{ Name = "不检查依赖", Value = "DO_NOT_CHECK" },
                 },
-                GetValueHandler = (LaunchInfoPlain p) => { return p.RequirementCommand; },
-                SetValueHandler = (LaunchInfoPlain p, string val) => { p.RequirementCommand = val; }
+                GetValueHandler = (LaunchInfoData p) => { return p.RequirementCommand; },
+                SetValueHandler = (LaunchInfoData p, string val) => { p.RequirementCommand = val; }
             });
 
-            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "status_check_method",
                 FriendlyConfigName = "运行状态检查",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_LIST,
-                ListItems = new List<MetaInformation<LaunchInfoPlain>.ListItem>
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_LIST,
+                ListItems = new List<MetaInformation<LaunchInfoData>.ListItem>
                 {
-                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "检查端口占用", Value = StatusCheckMethod.CHECK_PORT_USAGE },
-                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "检查进程是否存在", Value = StatusCheckMethod.CHECK_EXECUTABLE_EXISTANCE },
-                    new MetaInformation<LaunchInfoPlain>.ListItem{ Name = "不检查运行状态", Value = StatusCheckMethod.NO_CHECK }
+                    new MetaInformation<LaunchInfoData>.ListItem{ Name = "检查端口占用", Value = StatusCheckMethodEnum.CHECK_PORT_USAGE },
+                    new MetaInformation<LaunchInfoData>.ListItem{ Name = "检查进程是否存在", Value = StatusCheckMethodEnum.CHECK_EXECUTABLE_EXISTANCE },
+                    new MetaInformation<LaunchInfoData>.ListItem{ Name = "不检查运行状态", Value = StatusCheckMethodEnum.NO_CHECK }
                 },
-                GetValueHandler = (LaunchInfoPlain p) => { return p.StatusCheckMethod; },
-                SetValueHandler = (LaunchInfoPlain p, string val) => { p.StatusCheckMethod = val; }
+                GetValueHandler = (LaunchInfoData p) => { return p.StatusCheckMethod; },
+                SetValueHandler = (LaunchInfoData p, string val) => { p.StatusCheckMethod = val; }
             });
 
-            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "workdir",
                 FriendlyConfigName = "工作目录",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_FILE,
-                GetValueHandler = (LaunchInfoPlain p) => { return p.WorkingDirectory; },
-                SetValueHandler = (LaunchInfoPlain p, string val) => { p.WorkingDirectory = val; }
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_FILE,
+                GetValueHandler = (LaunchInfoData p) => { return p.WorkingDirectory; },
+                SetValueHandler = (LaunchInfoData p, string val) => { p.WorkingDirectory = val; }
             });
 
-            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "executable_name",
                 FriendlyConfigName = "可执行文件名称",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_STRING,
-                GetValueHandler = (LaunchInfoPlain p) => { return p.ExecutableName; },
-                SetValueHandler = (LaunchInfoPlain p, string val) => { p.ExecutableName = val; }
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_STRING,
+                GetValueHandler = (LaunchInfoData p) => { return p.ExecutableName; },
+                SetValueHandler = (LaunchInfoData p, string val) => { p.ExecutableName = val; }
             });
 
-            settingItemConfigs.Add(new MetaInformation<LaunchInfoPlain>
+            settingItemConfigs.Add(new MetaInformation<LaunchInfoData>
             {
                 ConfigName = "run_background",
                 FriendlyConfigName = "在后台运行",
-                ConfigType = MetaInformation<LaunchInfoPlain>.CONFIG_TYPE_BOOL,
-                GetValueHandler = (LaunchInfoPlain p) => { return p.RunBackground ? "1" : "0"; },
-                SetValueHandler = (LaunchInfoPlain p, string val) => { p.RunBackground = val == "1"; }
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_BOOL,
+                GetValueHandler = (LaunchInfoData p) => { return p.RunBackground ? "1" : "0"; },
+                SetValueHandler = (LaunchInfoData p, string val) => { p.RunBackground = val == "1"; }
             });
 
-            MetaInformation<LaunchInfoPlain>.ValueFillHandler = FillValueOfValuedSettingItem;
-        }
-
-        string FillValueOfValuedSettingItem(string nameInConfig, LaunchInfoPlain info)
-        {
-            switch (nameInConfig)
-            {
-                case "name":
-                    return info.Name;
-                case "command":
-                    return info.Command;
-                case "port":
-                    return info.PortNumber.ToString();
-                case "requirement_command":
-                    return info.RequirementCommand;
-                case "status_check_method":
-                    return info.StatusCheckMethod;
-                case "run_background":
-                    return info.RunBackground ? "1" : "0";
-                case "workdir":
-                    return info.WorkingDirectory;
-                case "executable_name":
-                    return info.ExecutableName;
-            }
-            return "<Error Value>";
+            MetaInformation<LaunchInfoData>.ValueFillHandler = LaunchInfoData.GetFieldValueString;
         }
 
         string GenerateIniString()
@@ -145,8 +121,8 @@ namespace tbm_launcher
             str += "title=" + textBox1.Text + CRLF + CRLF;
             foreach (object o in listConfig.Items)
             {
-                LaunchInfoPlain p = o as LaunchInfoPlain;
-                str += MetaInformation<LaunchInfoPlain>.GenerateIniString(settingItemConfigs, p);
+                LaunchInfoData p = o as LaunchInfoData;
+                str += MetaInformation<LaunchInfoData>.GenerateIniString(settingItemConfigs, p);
             }
             return str;
         }
@@ -156,7 +132,7 @@ namespace tbm_launcher
             listConfig.Items.Clear();
             foreach (LaunchInfo info in IniConfigureList)
             {
-                listConfig.Items.Add(info.GetLauncherInfoPlain());
+                listConfig.Items.Add(info.Data);
             }
             if (listConfig.Items.Count > 1)
                 listConfig.SelectedIndex = 0;
@@ -178,8 +154,8 @@ namespace tbm_launcher
                 return;
             }
             LastSelectedConfigItem = listConfig.SelectedIndex;
-            MetaInformation<LaunchInfoPlain>.RenderControlGroup(settingItemConfigs, 
-                listConfig.SelectedItem as LaunchInfoPlain, panel_config);
+            MetaInformation<LaunchInfoData>.RenderControlGroup(settingItemConfigs, 
+                listConfig.SelectedItem as LaunchInfoData, panel_config);
         }
 
         private void FormConfigure_FormClosed(object sender, FormClosedEventArgs e)
@@ -204,16 +180,8 @@ namespace tbm_launcher
         {
             string newConfigName = "新建配置项 #" + new_config_count;
             new_config_count++;
-            LaunchInfoPlain L = new LaunchInfoPlain
-            {
-                Name = newConfigName,
-                PortNumber = 0,
-                Command = "",
-                RequirementCommand = "",
-                StatusCheckMethod = StatusCheckMethod.CHECK_PORT_USAGE,
-                ExecutableName = "",
-                WorkingDirectory = "",
-            };
+            LaunchInfoData L = new LaunchInfoData();
+            L.Name = newConfigName;
             listConfig.Items.Add(L);
             listConfig.SelectedIndex = listConfig.Items.Count - 1;
         }

@@ -19,6 +19,7 @@ namespace tbm_launcher
     {
         public Form1()
         {
+            CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
         }
 
@@ -40,7 +41,6 @@ namespace tbm_launcher
                     LI.Add(L);
                     has_error = true;
                     err_msg += "\r\nLine " + err.Line + ": " + err.What;
-                    
                 };
                 configReader.OnReadConfigItem = (LaunchInfo L) =>
                 {
@@ -75,7 +75,7 @@ namespace tbm_launcher
         {
             btn_launch.Enabled = false;
             foreach (LaunchInfo l in LI)
-                l.Start();
+                l.StartService();
             btn_launch.Enabled = true;
         }
 
@@ -88,7 +88,7 @@ namespace tbm_launcher
         {
             btn_stop.Enabled = false;
             foreach (LaunchInfo l in LI)
-                l.End();
+                l.StopService();
             btn_stop.Enabled = true;
         }
 
