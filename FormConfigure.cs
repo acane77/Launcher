@@ -194,6 +194,7 @@ namespace tbm_launcher
             int current_idx = listConfig.SelectedIndex;
             listConfig.Items.Insert(listConfig.SelectedIndex + 1, L);
             listConfig.SelectedIndex = current_idx + 1;
+            listConfig.Focus();
         }
 
         const string CRLF = "\r\n";

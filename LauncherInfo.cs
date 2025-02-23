@@ -562,7 +562,7 @@ namespace tbm_launcher
                     p.StartInfo.WorkingDirectory = WorkingDirectory;
                 }
                 p.StartInfo.FileName = "cmd.exe";
-                p.StartInfo.Arguments = "/c \"" + command.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
+                p.StartInfo.Arguments = "/c \"" + command + "\"";
                 //MessageBox.Show(p.StartInfo.Arguments);
                 p.StartInfo.CreateNoWindow = true;
                 if (RunBackground)
