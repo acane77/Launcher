@@ -210,6 +210,7 @@ namespace tbm_launcher
             {
                 listConfig.SelectedIndex = Math.Max(0, Math.Min(sel - 1, listConfig.Items.Count - 1));
             }
+            listConfig.Focus();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -220,6 +221,7 @@ namespace tbm_launcher
 
         private void btn_moveup_Click(object sender, EventArgs e)
         {
+            listConfig.Focus();
             if (listConfig.SelectedIndex <= 0)
                 return;
             int sel = listConfig.SelectedIndex;
@@ -231,6 +233,7 @@ namespace tbm_launcher
 
         private void btn_movedown_Click(object sender, EventArgs e)
         {
+            listConfig.Focus();
             if (listConfig.SelectedIndex < 0 || listConfig.SelectedIndex >= listConfig.Items.Count - 1)
                 return;
             int sel = listConfig.SelectedIndex;
@@ -242,6 +245,7 @@ namespace tbm_launcher
 
         private void move_copy_Click(object sender, EventArgs e)
         {
+            listConfig.Focus();
             if (listConfig.SelectedIndex == -1)
                 return;
             int sel = listConfig.SelectedIndex;

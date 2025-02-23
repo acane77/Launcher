@@ -100,9 +100,10 @@ namespace tbm_launcher
         public object mouseItem;
         private CusomizedListBoxItemCollection m_Items;
 
-        public Color _MoveItemBackColor;
-        public Color _SelectedItemBackColor;
-        public Color _SelectedForeColor;
+        public Color _MoveItemBackColor = Color.FromArgb(255, 229, 243, 255);
+        public Color _SelectedItemBackColor = Color.FromArgb(255, 204, 232, 255);
+        public Color _SelectedForeColor = Color.White;
+        public Color _SelectedItemUnfocusedBackColor = Color.FromArgb(255, 217, 217, 217);
 
         public int HoverIndex { get; set; }
 
@@ -120,10 +121,6 @@ namespace tbm_launcher
             this.SetStyle(ControlStyles.SupportsTransparentBackColor, true); // 开启控件透明
 
             HoverIndex = -1;
-
-            _SelectedItemBackColor = Color.FromArgb(255, 204, 232, 255);
-            _MoveItemBackColor = Color.FromArgb(255, 229, 243, 255);
-            _SelectedForeColor = Color.White;
         }
 
         public new CusomizedListBoxItemCollection Items => m_Items;
@@ -181,11 +178,12 @@ namespace tbm_launcher
 
             for (int i = 0; i < Items.Count; i++)
             {
+                
                 Rectangle bounds = this.GetItemRectangle(i);
 
                 if (this.SelectedItem == Items[i])
                 {
-                    Color bgColor = _SelectedItemBackColor;
+                    Color bgColor = Focused || mouseItem == Items[i] ? _SelectedItemBackColor : _SelectedItemUnfocusedBackColor;
 
                     using (SolidBrush brush = new SolidBrush(bgColor))
                     {
@@ -195,10 +193,13 @@ namespace tbm_launcher
                     Color borderColor = Color.FromArgb(255, 0, 120, 212);
                     int borderWidth = 1; // 设置边框宽度
 
-                    using (Pen pen = new Pen(borderColor, borderWidth))
+                    if (Focused || mouseItem == Items[i])
                     {
-                        // 绘制边界
-                        g.DrawRectangle(pen, bounds.X, bounds.Y, bounds.Width-1, bounds.Height-2);
+                        using (Pen pen = new Pen(borderColor, borderWidth))
+                        {
+                            // 绘制边界
+                            g.DrawRectangle(pen, bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 2);
+                        }
                     }
 
                     //description += " (Process:" + Items[i].PID.ToString() + " / Window: " + Handle.ToString() + ")";
@@ -217,7 +218,7 @@ namespace tbm_launcher
                 System.Drawing.Font font = new System.Drawing.Font("微软雅黑", 9);
                 // System.Drawing.Font fontDesc = new System.Drawing.Font("微软雅黑", 9);
 
-                g.DrawString(Items[i].ToString(), font, new SolidBrush(this.ForeColor), fontLeft, bounds.Top + 2);
+                g.DrawString(Items[i].ToString(), font, new SolidBrush(this.ForeColor), fontLeft, bounds.Top + 3);
 
                 //if (Items[i].Icon != null)
                 //{
