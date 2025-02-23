@@ -70,6 +70,7 @@
             // 
             // btn_stop
             // 
+            this.btn_stop.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btn_stop.Location = new System.Drawing.Point(357, 398);
             this.btn_stop.Name = "btn_stop";
             this.btn_stop.Size = new System.Drawing.Size(121, 31);
@@ -80,6 +81,7 @@
             // 
             // btn_launch
             // 
+            this.btn_launch.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btn_launch.Location = new System.Drawing.Point(207, 398);
             this.btn_launch.Name = "btn_launch";
             this.btn_launch.Size = new System.Drawing.Size(144, 31);
@@ -90,6 +92,7 @@
             // 
             // button1
             // 
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.button1.Location = new System.Drawing.Point(12, 398);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(95, 31);
