@@ -206,7 +206,10 @@ namespace tbm_launcher
                 return;
             int sel = listConfig.SelectedIndex;
             listConfig.Items.RemoveAt(sel);
-            listConfig.SelectedIndex = Math.Max(0, Math.Min(sel - 1, listConfig.Items.Count - 1));
+            if (listConfig.Items.Count > 0)
+            {
+                listConfig.SelectedIndex = Math.Max(0, Math.Min(sel - 1, listConfig.Items.Count - 1));
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
