@@ -30,7 +30,7 @@ namespace tbm_launcher
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.listConfig = new CusomizedListBox();
+            this.listConfig = new tbm_launcher.CusomizedListBox();
             this.btn_launch = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -47,24 +47,26 @@ namespace tbm_launcher
             this.label1.Location = new System.Drawing.Point(13, 40);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(64, 24);
+            this.label1.Size = new System.Drawing.Size(86, 31);
             this.label1.TabIndex = 0;
             this.label1.Text = "配置项";
             // 
             // listConfig
             // 
+            this.listConfig.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
             this.listConfig.FormattingEnabled = true;
+            this.listConfig.HoverIndex = -1;
             this.listConfig.ItemHeight = 24;
             this.listConfig.Location = new System.Drawing.Point(16, 59);
             this.listConfig.Name = "listConfig";
-            this.listConfig.Size = new System.Drawing.Size(196, 244);
+            this.listConfig.Size = new System.Drawing.Size(196, 364);
             this.listConfig.TabIndex = 1;
             this.listConfig.SelectedIndexChanged += new System.EventHandler(this.listConfig_SelectedIndexChanged);
             // 
             // btn_launch
             // 
             this.btn_launch.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btn_launch.Location = new System.Drawing.Point(459, 330);
+            this.btn_launch.Location = new System.Drawing.Point(703, 438);
             this.btn_launch.Name = "btn_launch";
             this.btn_launch.Size = new System.Drawing.Size(103, 28);
             this.btn_launch.TabIndex = 2;
@@ -75,7 +77,7 @@ namespace tbm_launcher
             // button1
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button1.Location = new System.Drawing.Point(350, 330);
+            this.button1.Location = new System.Drawing.Point(594, 438);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(103, 28);
             this.button1.TabIndex = 3;
@@ -87,7 +89,7 @@ namespace tbm_launcher
             // 
             this.textBox1.Location = new System.Drawing.Point(68, 10);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(451, 31);
+            this.textBox1.Size = new System.Drawing.Size(738, 39);
             this.textBox1.TabIndex = 8;
             // 
             // label3
@@ -96,14 +98,14 @@ namespace tbm_launcher
             this.label3.Location = new System.Drawing.Point(13, 13);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(46, 24);
+            this.label3.Size = new System.Drawing.Size(62, 31);
             this.label3.TabIndex = 9;
             this.label3.Text = "标题";
             // 
             // button4
             // 
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button4.Location = new System.Drawing.Point(16, 337);
+            this.button4.Location = new System.Drawing.Point(219, 445);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(94, 19);
             this.button4.TabIndex = 10;
@@ -116,7 +118,7 @@ namespace tbm_launcher
             // 
             this.panel_config.Location = new System.Drawing.Point(218, 49);
             this.panel_config.Name = "panel_config";
-            this.panel_config.Size = new System.Drawing.Size(344, 272);
+            this.panel_config.Size = new System.Drawing.Size(594, 381);
             this.panel_config.TabIndex = 11;
             this.panel_config.TabStop = false;
             this.panel_config.Text = "配置";
@@ -128,7 +130,7 @@ namespace tbm_launcher
             this.button3.FlatAppearance.BorderSize = 0;
             this.button3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Location = new System.Drawing.Point(46, 305);
+            this.button3.Location = new System.Drawing.Point(46, 426);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(22, 22);
             this.button3.TabIndex = 5;
@@ -142,7 +144,7 @@ namespace tbm_launcher
             this.button2.FlatAppearance.BorderSize = 0;
             this.button2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Location = new System.Drawing.Point(18, 305);
+            this.button2.Location = new System.Drawing.Point(18, 426);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(22, 22);
             this.button2.TabIndex = 4;
@@ -152,10 +154,10 @@ namespace tbm_launcher
             // FormConfigure
             // 
             this.AcceptButton = this.button1;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(576, 368);
+            this.ClientSize = new System.Drawing.Size(824, 476);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panel_config);
             this.Controls.Add(this.button4);
@@ -185,7 +187,6 @@ namespace tbm_launcher
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox listConfig;
         private System.Windows.Forms.Button btn_launch;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
@@ -194,5 +195,6 @@ namespace tbm_launcher
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.GroupBox panel_config;
+        private CusomizedListBox listConfig;
     }
 }
