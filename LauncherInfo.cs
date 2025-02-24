@@ -133,7 +133,7 @@ namespace tbm_launcher
             return DeepCopy.Copy(this);
         }
     }
-    public class LaunchInfo
+    public class ServiceItemControlGroup
     {
         public class RunningStatus
         {
@@ -271,7 +271,7 @@ namespace tbm_launcher
 
         bool manual_terminate = false;
 
-        public LaunchInfo(LaunchInfoData data, int ctrl_index, Panel container)
+        public ServiceItemControlGroup(LaunchInfoData data, int ctrl_index, Panel container)
         {
             this.Ctrl_ParentControl = container;
             this.Data = data;

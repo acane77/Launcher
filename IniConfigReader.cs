@@ -19,8 +19,8 @@ namespace tbm_launcher
 
         public string ProgramTitle = "TBM Service Launcher";
 
-        public delegate void OnReadConfigItemDelegate(LaunchInfo LI);
-        public delegate void OnLoadConfigError(LaunchInfo LI, ParseError err);
+        public delegate void OnReadConfigItemDelegate(ServiceItemControlGroup LI);
+        public delegate void OnLoadConfigError(ServiceItemControlGroup LI, ParseError err);
 
         public OnReadConfigItemDelegate OnReadConfigItem = null;
         public OnLoadConfigError onLoadConfigError = null;
@@ -59,7 +59,7 @@ namespace tbm_launcher
             EmitParseErrorFuncTy EmitParseError = (string what) =>
             {
                 if (is_system_config) return;
-                LaunchInfo LI = new LaunchInfo(data, count, Container);
+                ServiceItemControlGroup LI = new ServiceItemControlGroup(data, count, Container);
                 ParseError err = new ParseError(line_no, what);
                 onLoadConfigError?.Invoke(LI, err);
                 on_error = true;
@@ -75,7 +75,7 @@ namespace tbm_launcher
                     {
                         if (!on_error && !is_system_config)
                         {
-                            LaunchInfo LI = new LaunchInfo(data, count, Container);
+                            ServiceItemControlGroup LI = new ServiceItemControlGroup(data, count, Container);
                             data = new LaunchInfoData();
                             OnReadConfigItem?.Invoke(LI);
                             count++;
@@ -135,7 +135,7 @@ namespace tbm_launcher
 
             if (!on_error && !is_system_config)
             {
-                LaunchInfo LI = new LaunchInfo(data, count, Container);
+                ServiceItemControlGroup LI = new ServiceItemControlGroup(data, count, Container);
                 data = new LaunchInfoData();
                 OnReadConfigItem?.Invoke(LI);
             }

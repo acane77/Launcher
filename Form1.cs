@@ -23,7 +23,7 @@ namespace tbm_launcher
             InitializeComponent();
         }
 
-        List<LaunchInfo> LI = new List<LaunchInfo>();
+        List<ServiceItemControlGroup> LI = new List<ServiceItemControlGroup>();
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -36,13 +36,13 @@ namespace tbm_launcher
             {
                 IniConfigReader configReader = new IniConfigReader(CONFIG_FILENAME);
                 configReader.Container = panel1;
-                configReader.onLoadConfigError = (LaunchInfo L, IniConfigReader.ParseError err) =>
+                configReader.onLoadConfigError = (ServiceItemControlGroup L, IniConfigReader.ParseError err) =>
                 {
                     LI.Add(L);
                     has_error = true;
                     err_msg += "\r\nLine " + err.Line + ": " + err.What;
                 };
-                configReader.OnReadConfigItem = (LaunchInfo L) =>
+                configReader.OnReadConfigItem = (ServiceItemControlGroup L) =>
                 {
                     LI.Add(L);
                 };
@@ -73,7 +73,7 @@ namespace tbm_launcher
         private void btn_launch_Click(object sender, EventArgs e)
         {
             btn_launch.Enabled = false;
-            foreach (LaunchInfo l in LI)
+            foreach (ServiceItemControlGroup l in LI)
                 l.StartService();
             btn_launch.Enabled = true;
         }
@@ -86,7 +86,7 @@ namespace tbm_launcher
         private void btn_stop_Click(object sender, EventArgs e)
         {
             btn_stop.Enabled = false;
-            foreach (LaunchInfo l in LI)
+            foreach (ServiceItemControlGroup l in LI)
                 l.StopService();
             btn_stop.Enabled = true;
         }
@@ -95,7 +95,7 @@ namespace tbm_launcher
         {
             Thread th = new Thread(() =>
             {
-                foreach (LaunchInfo l in LI)
+                foreach (ServiceItemControlGroup l in LI)
                     l.RetriveRunningInformation(true);
             });
             th.Start();

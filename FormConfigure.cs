@@ -19,7 +19,7 @@ namespace tbm_launcher
             InitializeComponent();
         }
 
-        public List<LaunchInfo> IniConfigureList = null;
+        public List<ServiceItemControlGroup> IniConfigureList = null;
         List<MetaInformation<LaunchInfoData>> settingItemConfigs = new List<MetaInformation<LaunchInfoData>>();
         public string SystemTitle = "";
 
@@ -139,7 +139,7 @@ namespace tbm_launcher
         void RenderConfigItemList()
         {
             listConfig.Items.Clear();
-            foreach (LaunchInfo info in IniConfigureList)
+            foreach (ServiceItemControlGroup info in IniConfigureList)
             {
                 listConfig.Items.Add(info.Data);
             }
