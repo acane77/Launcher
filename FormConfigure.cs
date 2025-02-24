@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -170,6 +171,7 @@ namespace tbm_launcher
 
         private void FormConfigure_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Process.Start(Application.ExecutablePath);
             Application.Exit();
         }
 
