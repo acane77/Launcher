@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static tbm_launcher.IniConfigReader;
@@ -184,11 +185,37 @@ namespace tbm_launcher
             Close();
         }
 
-        int new_config_count = 1;
+        int FindMaxNewConfig()
+        {
+            int max_epoch = 0;
+            Regex pattern = new Regex(@"新建配置项 \((\d+)\)");
+
+            foreach (object conf in listConfig.Items)
+            {
+                Match match = pattern.Match(conf.ToString());
+                if (match.Success)
+                {
+                    try
+                    {
+                        int epoch = int.Parse(match.Groups[1].Value);
+                        if (epoch > max_epoch)
+                        {
+                            max_epoch = epoch;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            return max_epoch;
+        }
+
+        
         private void button2_Click(object sender, EventArgs e)
         {
-            string newConfigName = "新建配置项 #" + new_config_count;
-            new_config_count++;
+            int new_config_count = 0;
+            try { new_config_count += FindMaxNewConfig() + 1; }
+            catch { new_config_count = 0; }
+            string newConfigName = "新建配置项 (" + new_config_count + ")";
             LaunchInfoData L = new LaunchInfoData();
             L.Name = newConfigName;
             int current_idx = listConfig.SelectedIndex;

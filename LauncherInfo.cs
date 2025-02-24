@@ -43,6 +43,10 @@ namespace tbm_launcher
 
         public override string ToString()
         {
+            if (Name == "")
+            {
+                return "<Unnamed>";
+            }
             return Name;
         }
 
@@ -279,7 +283,7 @@ namespace tbm_launcher
             const int height = 30; // TODO: make it DPI-aware
 
             Ctrl_Name = new Label();
-            Name = Data.Name;
+            Name = Data.ToString();
             Ctrl_Name.Location = new Point(0, height * ctrl_index);
             Ctrl_Name.Width = 195;
             container.Controls.Add(Ctrl_Name);
@@ -291,6 +295,14 @@ namespace tbm_launcher
             if (Data.StatusCheckMethod != StatusCheckMethodEnum.NO_CHECK)
             {
                 container.Controls.Add(Ctrl_Status);
+            }
+            else
+            {
+                Ctrl_Name.Width += 100;
+                if (Port == 0)
+                {
+                    Ctrl_Name.Width += 50;
+                }
             }
 
             Ctrl_Port = new Label();
