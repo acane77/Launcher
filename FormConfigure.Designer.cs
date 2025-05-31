@@ -224,7 +224,7 @@ namespace tbm_launcher
             this.Name = "FormConfigure";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "TBM Service Launcher - Configure";
+            this.Text = ProgramGlobalConfig.DefaultApplicationTitle + " - Configure";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormConfigure_FormClosed);
             this.Load += new System.EventHandler(this.FormConfigure_Load);
             this.ResumeLayout(false);

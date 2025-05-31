@@ -17,7 +17,7 @@ namespace tbm_launcher
 
         public Panel Container = null;
 
-        public string ProgramTitle = "TBM Service Launcher";
+        public string ProgramTitle = ProgramGlobalConfig.DefaultApplicationTitle;
 
         public delegate void OnReadConfigItemDelegate(ServiceItemControlGroup LI);
         public delegate void OnLoadConfigError(ServiceItemControlGroup LI, ParseError err);

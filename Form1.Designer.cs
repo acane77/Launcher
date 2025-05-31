@@ -47,7 +47,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(423, 50);
             this.label1.TabIndex = 0;
-            this.label1.Text = "TBM Service Launcher";
+            this.label1.Text = ProgramGlobalConfig.DefaultApplicationTitle;
             // 
             // panel1
             // 
@@ -128,7 +128,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TBM Service Launcher";
+            this.Text = "Melina Launcher";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);

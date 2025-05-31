@@ -10,5 +10,6 @@ namespace tbm_launcher
     {
         public static bool StartWithConfigureFlag = false;
         public const string CONFIG_FILENAME = "launcher_config.ini";
+        public const string DefaultApplicationTitle = "Melina Launcher";
     }
 }
