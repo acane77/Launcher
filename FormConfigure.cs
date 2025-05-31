@@ -100,7 +100,7 @@ namespace tbm_launcher
             {
                 ConfigName = "workdir",
                 FriendlyConfigName = "工作目录",
-                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_FILE,
+                ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_DIRECTORY,
                 GetValueHandler = (LaunchInfoData p) => { return p.WorkingDirectory; },
                 SetValueHandler = (LaunchInfoData p, string val) => { p.WorkingDirectory = val; }
             });

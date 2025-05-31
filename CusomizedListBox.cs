@@ -191,7 +191,7 @@ namespace tbm_launcher
                     }
 
                     Color borderColor = Color.FromArgb(255, 0, 120, 212);
-                    int borderWidth = 1; // 设置边框宽度
+                    float borderWidth = 1; // 设置边框宽度
 
                     if (Focused || mouseItem == Items[i])
                     {

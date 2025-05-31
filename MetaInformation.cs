@@ -47,6 +47,7 @@ namespace tbm_launcher
         public const int CONFIG_TYPE_INT = 4;
         public const int CONFIG_TYPE_DECIMAL = 5;
         public const int CONFIG_TYPE_BOOL = 6;
+        public const int CONFIG_TYPE_DIRECTORY = 7;
         public string ConfigName;
         public string FriendlyConfigName;
         public int ConfigType;
@@ -70,7 +71,8 @@ namespace tbm_launcher
             if (settingItem.ConfigType == CONFIG_TYPE_STRING
                 || settingItem.ConfigType == CONFIG_TYPE_FILE
                 || settingItem.ConfigType == CONFIG_TYPE_INT
-                || settingItem.ConfigType == CONFIG_TYPE_DECIMAL)
+                || settingItem.ConfigType == CONFIG_TYPE_DECIMAL
+                || settingItem.ConfigType == CONFIG_TYPE_DIRECTORY)
             {
                 if (settingItem.ListItems != null)
                 {
@@ -135,7 +137,8 @@ namespace tbm_launcher
             valueControl.Size = new Size(container.Width - baseValueLeft - baseValueRight, 22);
             Control additionalButton = null;
             // add special buttons for certain ConfigTypes
-            if (settingItem.ConfigType == CONFIG_TYPE_FILE)
+            if (settingItem.ConfigType == CONFIG_TYPE_FILE ||
+                settingItem.ConfigType == CONFIG_TYPE_DIRECTORY)
             {
                 int additionalButtonWidth = 50;
                 int baseAdditionalButtonRight = baseValueRight;
@@ -148,17 +151,32 @@ namespace tbm_launcher
                 button.FlatStyle = FlatStyle.System;
                 button.Size = new Size(additionalButtonWidth, 28);
                 button.FlatStyle = FlatStyle.System;
-                button.Click += (object _s, EventArgs _e) =>
+                if (settingItem.ConfigType == CONFIG_TYPE_FILE)
                 {
-                    OpenFileDialog dialog = new OpenFileDialog();
-                    dialog.InitialDirectory = Application.StartupPath;
-                    dialog.CheckFileExists = true;
-                    var res = dialog.ShowDialog();
-                    if (res == DialogResult.OK)
+                    button.Click += (object _s, EventArgs _e) =>
                     {
-                        valueControl.Text = dialog.FileName;
-                    }
-                };
+                        OpenFileDialog dialog = new OpenFileDialog();
+                        dialog.InitialDirectory = Application.StartupPath;
+                        dialog.CheckFileExists = true;
+                        var res = dialog.ShowDialog();
+                        if (res == DialogResult.OK)
+                        {
+                            valueControl.Text = dialog.FileName;
+                        }
+                    };
+                }
+                else {
+                    button.Click += (object _s, EventArgs _e) =>
+                    {
+                        FolderBrowserDialog dialog = new FolderBrowserDialog();
+                        dialog.SelectedPath = Application.StartupPath;
+                        var res = dialog.ShowDialog();
+                        if (res == DialogResult.OK)
+                        {
+                            valueControl.Text = dialog.SelectedPath;
+                        }
+                    };
+                }
                 additionalButton = button;
             }
             if (additionalButton != null) {
