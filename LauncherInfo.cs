@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -374,9 +375,40 @@ namespace tbm_launcher
                 program_name = ExecutableName.Trim();
             }
             Process[] processes = Process.GetProcesses();
-            foreach (Process p in processes)
-                if (program_name.ToLower() == p.ProcessName.ToLower() || program_name.ToLower() == p.ProcessName.ToLower() + ".exe")
-                    return true;
+            bool is_regex = ExecutableName.StartsWith("/") && ExecutableName.EndsWith("/");
+            if (is_regex)
+            {
+                try
+                {
+                    string regex_str = ExecutableName.TrimStart('/').TrimEnd('/').ToLower();
+                    Regex regex = new Regex(regex_str);
+                    foreach (Process p in processes)
+                    {
+                        if (regex.IsMatch(program_name.ToLower()))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                foreach (Process p in processes)
+                {
+                    if (program_name.ToLower() == p.ProcessName.ToLower() ||
+                        program_name.ToLower() == p.ProcessName.ToLower() + ".exe")
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+
+            
             return false;
         }
 

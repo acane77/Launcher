@@ -110,6 +110,11 @@ namespace tbm_launcher
                 ConfigName = "executable_name",
                 FriendlyConfigName = "可执行文件名称",
                 ConfigType = MetaInformation<LaunchInfoData>.CONFIG_TYPE_STRING,
+                ListItems = new List<MetaInformation<LaunchInfoData>.ListItem>
+                {
+                    new MetaInformation<LaunchInfoData>.ListItem{ Name = "填写可执行文件名称", Value = "" },
+                    new MetaInformation<LaunchInfoData>.ListItem{ Name = "使用正则表达式(以/开头和结尾)", Value = "//" },
+                },
                 GetValueHandler = (LaunchInfoData p) => { return p.ExecutableName; },
                 SetValueHandler = (LaunchInfoData p, string val) => { p.ExecutableName = val; }
             });
