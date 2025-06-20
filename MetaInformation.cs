@@ -132,6 +132,9 @@ namespace tbm_launcher
                 checkbox.CheckedChanged += (object sender_, EventArgs e_) => {
                     settingItem.SetValueHandler(info, (sender_ as CheckBox).Checked ? "1" : "0");
                 };
+                
+                checkbox.Text = labelConfigName.Text;
+                labelConfigName.Text = "";
             }
             valueControl.Location = new Point(baseValueLeft, baseHeight + baseValueHeightOffset);
             valueControl.Size = new Size(container.Width - baseValueLeft - baseValueRight, 22);
