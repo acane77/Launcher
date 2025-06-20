@@ -380,11 +380,15 @@ namespace tbm_launcher
             {
                 try
                 {
-                    string regex_str = ExecutableName.TrimStart('/').TrimEnd('/').ToLower();
+                    string regex_str = ExecutableName.TrimStart('/').TrimEnd('/').Trim().ToLower();
+                    if (regex_str == "")
+                    {
+                        return false;
+                    }
                     Regex regex = new Regex(regex_str);
                     foreach (Process p in processes)
                     {
-                        if (regex.IsMatch(program_name.ToLower()))
+                        if (regex.IsMatch(p.ProcessName.ToLower()))
                         {
                             return true;
                         }
